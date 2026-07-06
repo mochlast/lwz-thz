@@ -1,0 +1,695 @@
+{
+  "views": [
+    {
+      "title": "Verläufe",
+      "path": "verlaeufe",
+      "icon": "mdi:chart-line",
+      "type": "sections",
+      "max_columns": 3,
+      "sections": [
+        {
+          "type": "grid",
+          "column_span": 3,
+          "cards": [
+            {
+              "type": "custom:apexcharts-card",
+              "grid_options": {
+                "columns": "full"
+              },
+              "experimental": {
+                "brush": true
+              },
+              "graph_span": "3d",
+              "brush": {
+                "selection_span": "24h"
+              },
+              "header": {
+                "show": true,
+                "title": "Heizkreis",
+                "show_states": true,
+                "colorize_states": true
+              },
+              "apex_config": {
+                "chart": {
+                  "height": 260
+                },
+                "legend": {
+                  "show": true,
+                  "position": "bottom"
+                },
+                "grid": {
+                  "borderColor": "rgba(128,128,128,0.15)",
+                  "strokeDashArray": 3
+                }
+              },
+              "yaxis": [
+                {
+                  "id": "temp",
+                  "decimals": 0
+                },
+                {
+                  "id": "status",
+                  "show": false,
+                  "min": 0,
+                  "max": 1
+                }
+              ],
+              "series": [
+                {
+                  "entity": "sensor.lwz_304_trend_vorlauftemperatur",
+                  "name": "Vorlauf",
+                  "yaxis_id": "temp",
+                  "color": "#e45756",
+                  "stroke_width": 2,
+                  "show": {
+                    "legend_value": false,
+                    "in_brush": true
+                  }
+                },
+                {
+                  "entity": "sensor.lwz_304_trend_rucklauftemperatur",
+                  "name": "Rücklauf",
+                  "yaxis_id": "temp",
+                  "color": "#4c78a8",
+                  "stroke_width": 2,
+                  "show": {
+                    "legend_value": false
+                  }
+                },
+                {
+                  "entity": "sensor.lwz_304_trend_vorlauf_solltemperatur",
+                  "name": "Soll",
+                  "yaxis_id": "temp",
+                  "color": "#54a24b",
+                  "curve": "stepline",
+                  "stroke_width": 2,
+                  "stroke_dash": 4,
+                  "show": {
+                    "legend_value": false
+                  }
+                },
+                {
+                  "entity": "sensor.lwz_304_trend_aussentemperatur",
+                  "name": "Außen",
+                  "yaxis_id": "temp",
+                  "color": "#9d9d9d",
+                  "stroke_width": 1.5,
+                  "show": {
+                    "legend_value": false
+                  }
+                },
+                {
+                  "entity": "binary_sensor.lwz_304_trend_verdichter",
+                  "name": "Verdichter",
+                  "yaxis_id": "status",
+                  "type": "area",
+                  "curve": "stepline",
+                  "color": "#f58518",
+                  "opacity": 0.18,
+                  "stroke_width": 0,
+                  "transform": "return x === 'on' ? 1 : 0;",
+                  "show": {
+                    "in_header": false,
+                    "legend_value": false
+                  }
+                },
+                {
+                  "entity": "binary_sensor.lwz_304_trend_booster_stufe_1",
+                  "name": "Heizstab",
+                  "yaxis_id": "status",
+                  "type": "area",
+                  "curve": "stepline",
+                  "color": "#b02a2a",
+                  "opacity": 0.25,
+                  "stroke_width": 0,
+                  "transform": "return x === 'on' ? 1 : 0;",
+                  "show": {
+                    "in_header": false,
+                    "legend_value": false
+                  }
+                },
+                {
+                  "entity": "binary_sensor.lwz_304_trend_heizkreispumpe",
+                  "name": "HK-Pumpe",
+                  "yaxis_id": "status",
+                  "type": "area",
+                  "curve": "stepline",
+                  "color": "#72b7b2",
+                  "opacity": 0.15,
+                  "stroke_width": 0,
+                  "transform": "return x === 'on' ? 1 : 0;",
+                  "show": {
+                    "in_header": false,
+                    "legend_value": false
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "column_span": 3,
+          "cards": [
+            {
+              "type": "custom:apexcharts-card",
+              "grid_options": {
+                "columns": "full"
+              },
+              "experimental": {
+                "brush": true
+              },
+              "graph_span": "3d",
+              "brush": {
+                "selection_span": "24h"
+              },
+              "header": {
+                "show": true,
+                "title": "Warmwasser",
+                "show_states": true,
+                "colorize_states": true
+              },
+              "apex_config": {
+                "chart": {
+                  "height": 240
+                },
+                "legend": {
+                  "show": true,
+                  "position": "bottom"
+                },
+                "grid": {
+                  "borderColor": "rgba(128,128,128,0.15)",
+                  "strokeDashArray": 3
+                }
+              },
+              "yaxis": [
+                {
+                  "id": "temp",
+                  "decimals": 0
+                },
+                {
+                  "id": "status",
+                  "show": false,
+                  "min": 0,
+                  "max": 1
+                }
+              ],
+              "series": [
+                {
+                  "entity": "sensor.lwz_304_trend_warmwassertemperatur",
+                  "name": "Temperatur",
+                  "yaxis_id": "temp",
+                  "color": "#4c78a8",
+                  "stroke_width": 2,
+                  "show": {
+                    "legend_value": false,
+                    "in_brush": true
+                  }
+                },
+                {
+                  "entity": "sensor.lwz_304_trend_warmwasser_solltemperatur",
+                  "name": "Soll",
+                  "yaxis_id": "temp",
+                  "color": "#54a24b",
+                  "curve": "stepline",
+                  "stroke_width": 2,
+                  "stroke_dash": 4,
+                  "show": {
+                    "legend_value": false
+                  }
+                },
+                {
+                  "entity": "binary_sensor.lwz_304_trend_warmwasserpumpe",
+                  "name": "WW-Pumpe",
+                  "yaxis_id": "status",
+                  "type": "area",
+                  "curve": "stepline",
+                  "color": "#72b7b2",
+                  "opacity": 0.2,
+                  "stroke_width": 0,
+                  "transform": "return x === 'on' ? 1 : 0;",
+                  "show": {
+                    "in_header": false,
+                    "legend_value": false
+                  }
+                },
+                {
+                  "entity": "binary_sensor.lwz_304_trend_booster_stufe_1",
+                  "name": "Heizstab",
+                  "yaxis_id": "status",
+                  "type": "area",
+                  "curve": "stepline",
+                  "color": "#b02a2a",
+                  "opacity": 0.25,
+                  "stroke_width": 0,
+                  "transform": "return x === 'on' ? 1 : 0;",
+                  "show": {
+                    "in_header": false,
+                    "legend_value": false
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "column_span": 3,
+          "cards": [
+            {
+              "type": "custom:apexcharts-card",
+              "grid_options": {
+                "columns": "full"
+              },
+              "header": {
+                "show": true,
+                "title": "Energie & Arbeitszahl (7 Tage)",
+                "show_states": false
+              },
+              "graph_span": "7d",
+              "apex_config": {
+                "chart": {
+                  "height": 220,
+                  "stacked": true
+                },
+                "legend": {
+                  "show": true,
+                  "position": "bottom"
+                },
+                "grid": {
+                  "borderColor": "rgba(128,128,128,0.15)",
+                  "strokeDashArray": 3
+                }
+              },
+              "yaxis": [
+                {
+                  "id": "kwh",
+                  "decimals": 0,
+                  "min": 0
+                },
+                {
+                  "id": "az",
+                  "opposite": true,
+                  "decimals": 1,
+                  "min": 0
+                }
+              ],
+              "series": [
+                {
+                  "entity": "sensor.technikraum_lwz_304_trend_stromverbrauch_heizen_heute",
+                  "name": "Strom Heizen",
+                  "yaxis_id": "kwh",
+                  "type": "column",
+                  "color": "#4c78a8",
+                  "unit": "kWh",
+                  "transform": "return x / 1000;",
+                  "group_by": {
+                    "func": "max",
+                    "duration": "1d"
+                  },
+                  "show": {
+                    "legend_value": false
+                  }
+                },
+                {
+                  "entity": "sensor.technikraum_lwz_304_trend_stromverbrauch_warmwasser_heute",
+                  "name": "Strom Warmwasser",
+                  "yaxis_id": "kwh",
+                  "type": "column",
+                  "color": "#72b7b2",
+                  "unit": "kWh",
+                  "transform": "return x / 1000;",
+                  "group_by": {
+                    "func": "max",
+                    "duration": "1d"
+                  },
+                  "show": {
+                    "legend_value": false
+                  }
+                },
+                {
+                  "entity": "sensor.lwz_arbeitszahl_heizen_heute",
+                  "name": "AZ Heizen",
+                  "yaxis_id": "az",
+                  "color": "#54a24b",
+                  "stroke_width": 3,
+                  "group_by": {
+                    "func": "last",
+                    "duration": "1d"
+                  },
+                  "show": {
+                    "legend_value": false
+                  }
+                },
+                {
+                  "entity": "sensor.lwz_arbeitszahl_warmwasser_heute",
+                  "name": "AZ Warmwasser",
+                  "yaxis_id": "az",
+                  "color": "#f58518",
+                  "stroke_width": 3,
+                  "group_by": {
+                    "func": "last",
+                    "duration": "1d"
+                  },
+                  "show": {
+                    "legend_value": false
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "column_span": 3,
+          "cards": [
+            {
+              "type": "custom:apexcharts-card",
+              "grid_options": {
+                "columns": "full"
+              },
+              "header": {
+                "show": true,
+                "title": "Lüftung & Raumklima",
+                "show_states": true,
+                "colorize_states": true
+              },
+              "graph_span": "3d",
+              "apex_config": {
+                "chart": {
+                  "height": 220
+                },
+                "legend": {
+                  "show": true,
+                  "position": "bottom"
+                },
+                "grid": {
+                  "borderColor": "rgba(128,128,128,0.15)",
+                  "strokeDashArray": 3
+                }
+              },
+              "yaxis": [
+                {
+                  "id": "rpm",
+                  "decimals": 0,
+                  "min": 0
+                },
+                {
+                  "id": "hum",
+                  "opposite": true,
+                  "decimals": 0,
+                  "min": 0,
+                  "max": 100
+                }
+              ],
+              "series": [
+                {
+                  "entity": "sensor.lwz_304_trend_zuluftventilator_drehzahl",
+                  "name": "Zuluft",
+                  "yaxis_id": "rpm",
+                  "curve": "stepline",
+                  "color": "#4c78a8",
+                  "stroke_width": 2,
+                  "show": {
+                    "legend_value": false,
+                    "in_brush": true
+                  }
+                },
+                {
+                  "entity": "sensor.lwz_304_trend_abluftventilator_drehzahl",
+                  "name": "Abluft",
+                  "yaxis_id": "rpm",
+                  "curve": "stepline",
+                  "color": "#e45756",
+                  "stroke_width": 2,
+                  "show": {
+                    "legend_value": false
+                  }
+                },
+                {
+                  "entity": "sensor.lwz_304_trend_abluftfeuchte",
+                  "name": "Abluftfeuchte",
+                  "yaxis_id": "hum",
+                  "color": "#72b7b2",
+                  "stroke_width": 2,
+                  "show": {
+                    "legend_value": false
+                  }
+                }
+              ],
+              "experimental": {
+                "brush": true
+              },
+              "brush": {
+                "selection_span": "24h"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Diagnose",
+      "path": "diagnose",
+      "icon": "mdi:stethoscope",
+      "type": "sections",
+      "max_columns": 3,
+      "sections": [
+        {
+          "type": "grid",
+          "column_span": 3,
+          "cards": [
+            {
+              "type": "custom:lwz-heizkurve-card",
+              "grid_options": {
+                "columns": "full"
+              },
+              "title": "Heizkurve",
+              "gradient": "number.technikraum_lwz_304_trend_heizkurve_steilheit_p13",
+              "low_end": "number.technikraum_lwz_304_trend_heizkurve_fusspunkt_p14",
+              "room_influence": "number.technikraum_lwz_304_trend_heizkurve_raumeinfluss_p15",
+              "room_set": "sensor.lwz_304_trend_raum_solltemperatur",
+              "inside": "sensor.lwz_304_trend_raumtemperatur_fernbedienung",
+              "outside": "sensor.lwz_304_trend_aussentemperatur_gefiltert",
+              "heat_set": "sensor.lwz_304_trend_vorlauf_solltemperatur"
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "column_span": 3,
+          "cards": [
+            {
+              "type": "custom:apexcharts-card",
+              "grid_options": {
+                "columns": "full"
+              },
+              "header": {
+                "show": true,
+                "title": "Kältekreis",
+                "show_states": true,
+                "colorize_states": true
+              },
+              "graph_span": "3d",
+              "apex_config": {
+                "chart": {
+                  "height": 260
+                },
+                "legend": {
+                  "show": true,
+                  "position": "bottom"
+                },
+                "grid": {
+                  "borderColor": "rgba(128,128,128,0.15)",
+                  "strokeDashArray": 3
+                }
+              },
+              "yaxis": [
+                {
+                  "id": "temp",
+                  "decimals": 0
+                },
+                {
+                  "id": "druck",
+                  "opposite": true,
+                  "decimals": 0
+                },
+                {
+                  "id": "status",
+                  "show": false,
+                  "min": 0,
+                  "max": 1
+                }
+              ],
+              "series": [
+                {
+                  "entity": "sensor.lwz_304_trend_heissgastemperatur",
+                  "name": "Heißgas",
+                  "yaxis_id": "temp",
+                  "color": "#e45756",
+                  "stroke_width": 2,
+                  "show": {
+                    "legend_value": false,
+                    "in_brush": true
+                  }
+                },
+                {
+                  "entity": "sensor.lwz_304_trend_verdampfertemperatur",
+                  "name": "Verdampfer",
+                  "yaxis_id": "temp",
+                  "color": "#4c78a8",
+                  "stroke_width": 2,
+                  "show": {
+                    "legend_value": false
+                  }
+                },
+                {
+                  "entity": "sensor.lwz_304_trend_verflussigertemperatur",
+                  "name": "Verflüssiger",
+                  "yaxis_id": "temp",
+                  "color": "#f58518",
+                  "stroke_width": 2,
+                  "show": {
+                    "legend_value": false
+                  }
+                },
+                {
+                  "entity": "sensor.lwz_304_trend_hochdruck",
+                  "name": "Hochdruck",
+                  "yaxis_id": "druck",
+                  "color": "#b279a2",
+                  "stroke_width": 1.5,
+                  "stroke_dash": 4,
+                  "show": {
+                    "legend_value": false
+                  }
+                },
+                {
+                  "entity": "sensor.lwz_304_trend_niederdruck",
+                  "name": "Niederdruck",
+                  "yaxis_id": "druck",
+                  "color": "#54a24b",
+                  "stroke_width": 1.5,
+                  "stroke_dash": 4,
+                  "show": {
+                    "legend_value": false
+                  }
+                },
+                {
+                  "entity": "binary_sensor.lwz_304_trend_verdichter",
+                  "name": "Verdichter",
+                  "yaxis_id": "status",
+                  "type": "area",
+                  "curve": "stepline",
+                  "color": "#f58518",
+                  "opacity": 0.15,
+                  "stroke_width": 0,
+                  "transform": "return x === 'on' ? 1 : 0;",
+                  "show": {
+                    "in_header": false,
+                    "legend_value": false
+                  }
+                }
+              ],
+              "experimental": {
+                "brush": true
+              },
+              "brush": {
+                "selection_span": "24h"
+              }
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "column_span": 3,
+          "cards": [
+            {
+              "type": "custom:apexcharts-card",
+              "grid_options": {
+                "columns": "full"
+              },
+              "header": {
+                "show": true,
+                "title": "Momentanleistung & Volumenstrom",
+                "show_states": true,
+                "colorize_states": true
+              },
+              "graph_span": "3d",
+              "apex_config": {
+                "chart": {
+                  "height": 220
+                },
+                "legend": {
+                  "show": true,
+                  "position": "bottom"
+                },
+                "grid": {
+                  "borderColor": "rgba(128,128,128,0.15)",
+                  "strokeDashArray": 3
+                }
+              },
+              "yaxis": [
+                {
+                  "id": "kw",
+                  "decimals": 1,
+                  "min": 0
+                },
+                {
+                  "id": "flow",
+                  "opposite": true,
+                  "decimals": 0,
+                  "min": 0
+                }
+              ],
+              "series": [
+                {
+                  "entity": "sensor.lwz_304_trend_thermische_leistung",
+                  "name": "Thermisch",
+                  "yaxis_id": "kw",
+                  "type": "area",
+                  "color": "#54a24b",
+                  "opacity": 0.25,
+                  "stroke_width": 2,
+                  "show": {
+                    "legend_value": false,
+                    "in_brush": true
+                  }
+                },
+                {
+                  "entity": "sensor.lwz_304_trend_elektrische_leistung",
+                  "name": "Elektrisch",
+                  "yaxis_id": "kw",
+                  "type": "area",
+                  "color": "#e45756",
+                  "opacity": 0.25,
+                  "stroke_width": 2,
+                  "show": {
+                    "legend_value": false
+                  }
+                },
+                {
+                  "entity": "sensor.lwz_304_trend_volumenstrom",
+                  "name": "Volumenstrom",
+                  "yaxis_id": "flow",
+                  "color": "#4c78a8",
+                  "stroke_width": 1.5,
+                  "stroke_dash": 4,
+                  "show": {
+                    "legend_value": false
+                  }
+                }
+              ],
+              "experimental": {
+                "brush": true
+              },
+              "brush": {
+                "selection_span": "24h"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "domain": "lwz_thz",
+  "name": "Stiebel Eltron LWZ / Tecalor THZ",
+  "codeowners": ["@mochlast"],
+  "config_flow": true,
+  "documentation": "https://github.com/mochlast/lwz-thz",
+  "integration_type": "device",
+  "iot_class": "local_polling",
+  "issue_tracker": "https://github.com/mochlast/lwz-thz/issues",
+  "requirements": ["pyserial-asyncio-fast>=0.13", "pyserial>=3.5"],
+  "version": "0.6.0"
+}

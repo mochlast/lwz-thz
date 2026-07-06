@@ -1,0 +1,459 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Verbindungsart",
+        "menu_options": {
+          "serial": "Serieller Anschluss (USB)",
+          "tcp": "Netzwerk (ser2net)"
+        }
+      },
+      "serial": {
+        "title": "Serielle Verbindung",
+        "description": "Seriellen Port der Wärmepumpen-Serviceschnittstelle eintragen (z. B. /dev/lwz304). Am besten einen stabilen Pfad verwenden (/dev/serial/by-id/… oder udev-Alias).\n\nErkannte Ports: {ports}",
+        "data": {
+          "port": "Serieller Port",
+          "baudrate": "Baudrate"
+        }
+      },
+      "tcp": {
+        "title": "Netzwerkverbindung",
+        "description": "Verbindung über eine ser2net-Bridge (seriell über TCP).",
+        "data": {
+          "host": "Host",
+          "tcp_port": "Port"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Verbindung kann nicht geöffnet werden. Stimmt der Gerätepfad und ist er in den Container gemountet?",
+      "no_response": "Port geöffnet, aber die Wärmepumpe antwortet nicht. Belegt ein anderes Programm (z. B. FHEM) noch den Port?",
+      "unknown": "Unerwarteter Fehler, siehe Log."
+    },
+    "abort": {
+      "already_configured": "Diese Verbindung ist bereits eingerichtet."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "outside_temp": {
+        "name": "Außentemperatur"
+      },
+      "outside_temp_filtered": {
+        "name": "Außentemperatur (gefiltert)"
+      },
+      "flow_temp": {
+        "name": "Vorlauftemperatur"
+      },
+      "return_temp": {
+        "name": "Rücklauftemperatur"
+      },
+      "hot_gas_temp": {
+        "name": "Heißgastemperatur"
+      },
+      "dhw_temp": {
+        "name": "Warmwassertemperatur"
+      },
+      "evaporator_temp": {
+        "name": "Verdampfertemperatur"
+      },
+      "condenser_temp": {
+        "name": "Verflüssigertemperatur"
+      },
+      "dew_point": {
+        "name": "Taupunkt"
+      },
+      "inside_temp": {
+        "name": "Innentemperatur"
+      },
+      "collector_temp": {
+        "name": "Kollektortemperatur"
+      },
+      "flow_temp_hc2": {
+        "name": "Vorlauftemperatur HK2"
+      },
+      "rel_humidity": {
+        "name": "Relative Luftfeuchte"
+      },
+      "humidity_air_out": {
+        "name": "Abluftfeuchte"
+      },
+      "pressure_low": {
+        "name": "Niederdruck"
+      },
+      "pressure_high": {
+        "name": "Hochdruck"
+      },
+      "pressure_hc_water": {
+        "name": "Heizwasserdruck"
+      },
+      "actual_power_qc": {
+        "name": "Thermische Leistung"
+      },
+      "actual_power_pel": {
+        "name": "Elektrische Leistung"
+      },
+      "flow_rate": {
+        "name": "Volumenstrom"
+      },
+      "output_ventilator_power": {
+        "name": "Abluftventilator Leistung"
+      },
+      "input_ventilator_power": {
+        "name": "Zuluftventilator Leistung"
+      },
+      "main_ventilator_power": {
+        "name": "Fortluftventilator Leistung"
+      },
+      "output_ventilator_speed": {
+        "name": "Abluftventilator Drehzahl"
+      },
+      "input_ventilator_speed": {
+        "name": "Zuluftventilator Drehzahl"
+      },
+      "main_ventilator_speed": {
+        "name": "Fortluftventilator Drehzahl"
+      },
+      "hc1_heat_set_temp": {
+        "name": "Vorlauf-Solltemperatur"
+      },
+      "hc1_room_set_temp": {
+        "name": "Raum-Solltemperatur"
+      },
+      "hc1_inside_temp_rc": {
+        "name": "Raumtemperatur (Fernbedienung)"
+      },
+      "hc1_season_mode": {
+        "name": "Betriebsart Saison",
+        "state": {
+          "winter": "Winter",
+          "summer": "Sommer"
+        }
+      },
+      "hc1_op_mode": {
+        "name": "Heizkreis-Modus",
+        "state": {
+          "normal": "Normal",
+          "setback": "Absenkung",
+          "standby": "Bereitschaft",
+          "restart": "Neustart"
+        }
+      },
+      "hc1_integral_heat": {
+        "name": "Heizintegral"
+      },
+      "hc1_booster_stage": {
+        "name": "Booster-Stufe Heizung"
+      },
+      "dhw_set_temp": {
+        "name": "Warmwasser-Solltemperatur"
+      },
+      "dhw_op_mode": {
+        "name": "Warmwasser-Modus",
+        "state": {
+          "normal": "Normal",
+          "setback": "Absenkung",
+          "standby": "Bereitschaft",
+          "restart": "Neustart"
+        }
+      },
+      "dhw_booster_stage": {
+        "name": "Booster-Stufe Warmwasser"
+      },
+      "heat_request": {
+        "name": "Wärmeanforderung"
+      },
+      "hc_stage": {
+        "name": "Heizstufe"
+      },
+      "dhw_stage": {
+        "name": "Warmwasserstufe"
+      },
+      "comp_block_time": {
+        "name": "Verdichter-Sperrzeit"
+      },
+      "airflow_inlet": {
+        "name": "Zuluft-Volumenstrom"
+      },
+      "airflow_outlet": {
+        "name": "Abluft-Volumenstrom"
+      },
+      "hours_compressor_heating": {
+        "name": "Betriebsstunden Verdichter Heizen"
+      },
+      "hours_compressor_cooling": {
+        "name": "Betriebsstunden Verdichter Kühlen"
+      },
+      "hours_compressor_dhw": {
+        "name": "Betriebsstunden Verdichter Warmwasser"
+      },
+      "hours_booster_dhw": {
+        "name": "Betriebsstunden Booster Warmwasser"
+      },
+      "hours_booster_heating": {
+        "name": "Betriebsstunden Booster Heizen"
+      },
+      "number_of_faults": {
+        "name": "Anzahl Fehler"
+      },
+      "last_fault": {
+        "name": "Letzter Fehler"
+      },
+      "hc2_heat_set_temp": {
+        "name": "Vorlauf-Solltemperatur HK2"
+      },
+      "hc2_op_mode": {
+        "name": "Heizkreis-2-Modus",
+        "state": {
+          "normal": "Normal",
+          "setback": "Absenkung",
+          "standby": "Bereitschaft",
+          "restart": "Neustart"
+        }
+      },
+      "solar_collector_temp": {
+        "name": "Solar-Kollektortemperatur"
+      },
+      "solar_dhw_temp": {
+        "name": "Solar-Warmwassertemperatur"
+      },
+      "energy_heat_hc_day": {
+        "name": "Wärmemenge Heizen heute"
+      },
+      "energy_heat_hc_total": {
+        "name": "Wärmemenge Heizen gesamt"
+      },
+      "energy_heat_dhw_day": {
+        "name": "Wärmemenge Warmwasser heute"
+      },
+      "energy_heat_dhw_total": {
+        "name": "Wärmemenge Warmwasser gesamt"
+      },
+      "energy_heat_recovered_day": {
+        "name": "Wärmerückgewinnung heute"
+      },
+      "energy_heat_recovered_total": {
+        "name": "Wärmerückgewinnung gesamt"
+      },
+      "energy_electr_hc_day": {
+        "name": "Stromverbrauch Heizen heute"
+      },
+      "energy_electr_hc_total": {
+        "name": "Stromverbrauch Heizen gesamt"
+      },
+      "energy_electr_dhw_day": {
+        "name": "Stromverbrauch Warmwasser heute"
+      },
+      "energy_electr_dhw_total": {
+        "name": "Stromverbrauch Warmwasser gesamt"
+      },
+      "energy_boost_dhw_total": {
+        "name": "Heizstab Warmwasser gesamt"
+      },
+      "energy_boost_hc_total": {
+        "name": "Heizstab Heizen gesamt"
+      }
+    },
+    "binary_sensor": {
+      "compressor": {
+        "name": "Verdichter"
+      },
+      "heating_circuit_pump": {
+        "name": "Heizkreispumpe"
+      },
+      "dhw_pump": {
+        "name": "Warmwasserpumpe"
+      },
+      "solar_pump": {
+        "name": "Solarpumpe"
+      },
+      "booster_stage_1": {
+        "name": "Booster Stufe 1"
+      },
+      "booster_stage_2": {
+        "name": "Booster Stufe 2"
+      },
+      "booster_stage_3": {
+        "name": "Booster Stufe 3"
+      },
+      "diverter_valve": {
+        "name": "Umschaltventil"
+      },
+      "heat_pipe_valve": {
+        "name": "Wärmerohrventil"
+      },
+      "mixer_open": {
+        "name": "Mischer öffnet"
+      },
+      "mixer_closed": {
+        "name": "Mischer schließt"
+      },
+      "evu_release": {
+        "name": "EVU-Freigabe"
+      },
+      "window_open": {
+        "name": "Fenster offen"
+      },
+      "quick_air_vent": {
+        "name": "Schnelllüftung (Eingang)"
+      },
+      "oven_fireplace": {
+        "name": "Ofen-/Kamin-Eingang"
+      },
+      "stb": {
+        "name": "Sicherheitstemperaturbegrenzer"
+      },
+      "high_pressure_sensor": {
+        "name": "Hochdrucksensor"
+      },
+      "low_pressure_sensor": {
+        "name": "Niederdrucksensor"
+      },
+      "evaporator_ice_monitor": {
+        "name": "Verdampfer-Vereisungsschutz"
+      },
+      "signal_anode": {
+        "name": "Anoden-Signal"
+      },
+      "display_filter": {
+        "name": "Filterwechsel"
+      },
+      "display_filter_up": {
+        "name": "Filterwechsel (Zuluft)"
+      },
+      "display_filter_down": {
+        "name": "Filterwechsel (Abluft)"
+      },
+      "display_service": {
+        "name": "Service"
+      },
+      "display_defrost": {
+        "name": "Abtauung"
+      },
+      "display_cooling": {
+        "name": "Kühlung"
+      },
+      "display_heating_hc": {
+        "name": "Heizen"
+      },
+      "display_heating_dhw": {
+        "name": "Warmwasserbereitung"
+      },
+      "display_booster_hc": {
+        "name": "Booster Heizen"
+      },
+      "display_vent_stage": {
+        "name": "Lüfterstufe aktiv"
+      },
+      "display_switching_prog": {
+        "name": "Schaltprogramm"
+      }
+    },
+    "number": {
+      "p01_room_temp_day": {
+        "name": "Raum-Soll Tag"
+      },
+      "p02_room_temp_night": {
+        "name": "Raum-Soll Nacht"
+      },
+      "p04_dhw_temp_day": {
+        "name": "Warmwasser-Soll Tag"
+      },
+      "p05_dhw_temp_night": {
+        "name": "Warmwasser-Soll Nacht"
+      },
+      "p43_unsched_vent_stage3": {
+        "name": "Sonderlüftung Dauer Stufe 3"
+      },
+      "p44_unsched_vent_stage2": {
+        "name": "Sonderlüftung Dauer Stufe 2"
+      },
+      "p45_unsched_vent_stage1": {
+        "name": "Sonderlüftung Dauer Stufe 1"
+      },
+      "p46_unsched_vent_stage0": {
+        "name": "Sonderlüftung Dauer Stufe 0"
+      },
+      "p13_gradient_hc1": {
+        "name": "Heizkurve Steilheit (p13)"
+      },
+      "p14_low_end_hc1": {
+        "name": "Heizkurve Fußpunkt (p14)"
+      },
+      "p15_room_influence_hc1": {
+        "name": "Heizkurve Raumeinfluss (p15)"
+      }
+    },
+    "select": {
+      "op_mode": {
+        "name": "Betriebsart",
+        "state": {
+          "automatic": "Automatik",
+          "day": "Tagbetrieb",
+          "setback": "Absenkbetrieb",
+          "dhw": "Nur Warmwasser",
+          "standby": "Bereitschaft",
+          "manual": "Handbetrieb",
+          "emergency": "Notbetrieb"
+        }
+      },
+      "p07_fan_stage_day": {
+        "name": "Lüfterstufe Tag",
+        "state": {
+          "stage_0": "Stufe 0",
+          "stage_1": "Stufe 1",
+          "stage_2": "Stufe 2",
+          "stage_3": "Stufe 3"
+        }
+      },
+      "p08_fan_stage_night": {
+        "name": "Lüfterstufe Nacht",
+        "state": {
+          "stage_0": "Stufe 0",
+          "stage_1": "Stufe 1",
+          "stage_2": "Stufe 2",
+          "stage_3": "Stufe 3"
+        }
+      },
+      "p09_fan_stage_standby": {
+        "name": "Lüfterstufe Bereitschaft",
+        "state": {
+          "stage_0": "Stufe 0",
+          "stage_1": "Stufe 1",
+          "stage_2": "Stufe 2",
+          "stage_3": "Stufe 3"
+        }
+      },
+      "p99_start_unsched_vent": {
+        "name": "Sonderlüftung starten",
+        "state": {
+          "stage_0": "Stufe 0",
+          "stage_1": "Stufe 1",
+          "stage_2": "Stufe 2",
+          "stage_3": "Stufe 3"
+        }
+      }
+    },
+    "water_heater": {
+      "dhw": {
+        "name": "Warmwasser"
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Abfrage & Ausstattung",
+        "description": "Abfrageintervalle je Registergruppe (Minimum 60 s). Die Schnittstelle wird immer strikt nacheinander bedient.",
+        "data": {
+          "interval_status": "Intervall Status (Temperaturen, Zustände)",
+          "interval_params": "Intervall Parameter (Sollwerte, Lüfterstufen)",
+          "interval_history": "Intervall Historie (Betriebsstunden, Fehler)",
+          "interval_energy": "Intervall Energiezähler",
+          "enable_hc2": "Heizkreis 2 vorhanden",
+          "enable_solar": "Solaranlage vorhanden"
+        }
+      }
+    }
+  }
+}

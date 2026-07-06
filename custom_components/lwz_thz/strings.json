@@ -1,0 +1,459 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connection type",
+        "menu_options": {
+          "serial": "Serial port (USB)",
+          "tcp": "Network (ser2net)"
+        }
+      },
+      "serial": {
+        "title": "Serial connection",
+        "description": "Enter the serial port of the heat pump service interface (e.g. /dev/lwz304). Prefer a stable path (/dev/serial/by-id/… or a udev alias).\n\nDetected ports: {ports}",
+        "data": {
+          "port": "Serial port",
+          "baudrate": "Baud rate"
+        }
+      },
+      "tcp": {
+        "title": "Network connection",
+        "description": "Connect via a ser2net-style serial-over-TCP bridge.",
+        "data": {
+          "host": "Host",
+          "tcp_port": "Port"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Cannot open the connection. Is the device path correct and mapped into the container?",
+      "no_response": "Port opened, but the heat pump does not answer. Is another reader (e.g. FHEM) still using the port?",
+      "unknown": "Unexpected error, check the logs."
+    },
+    "abort": {
+      "already_configured": "This connection is already configured."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "outside_temp": {
+        "name": "Outside temperature"
+      },
+      "outside_temp_filtered": {
+        "name": "Outside temperature (filtered)"
+      },
+      "flow_temp": {
+        "name": "Flow temperature"
+      },
+      "return_temp": {
+        "name": "Return temperature"
+      },
+      "hot_gas_temp": {
+        "name": "Hot gas temperature"
+      },
+      "dhw_temp": {
+        "name": "Hot water temperature"
+      },
+      "evaporator_temp": {
+        "name": "Evaporator temperature"
+      },
+      "condenser_temp": {
+        "name": "Condenser temperature"
+      },
+      "dew_point": {
+        "name": "Dew point"
+      },
+      "inside_temp": {
+        "name": "Inside temperature"
+      },
+      "collector_temp": {
+        "name": "Collector temperature"
+      },
+      "flow_temp_hc2": {
+        "name": "Flow temperature HC2"
+      },
+      "rel_humidity": {
+        "name": "Relative humidity"
+      },
+      "humidity_air_out": {
+        "name": "Extract air humidity"
+      },
+      "pressure_low": {
+        "name": "Low pressure"
+      },
+      "pressure_high": {
+        "name": "High pressure"
+      },
+      "pressure_hc_water": {
+        "name": "Heating water pressure"
+      },
+      "actual_power_qc": {
+        "name": "Thermal power"
+      },
+      "actual_power_pel": {
+        "name": "Electrical power"
+      },
+      "flow_rate": {
+        "name": "Flow rate"
+      },
+      "output_ventilator_power": {
+        "name": "Exhaust fan power"
+      },
+      "input_ventilator_power": {
+        "name": "Supply fan power"
+      },
+      "main_ventilator_power": {
+        "name": "Main fan power"
+      },
+      "output_ventilator_speed": {
+        "name": "Exhaust fan speed"
+      },
+      "input_ventilator_speed": {
+        "name": "Supply fan speed"
+      },
+      "main_ventilator_speed": {
+        "name": "Main fan speed"
+      },
+      "hc1_heat_set_temp": {
+        "name": "Flow target temperature"
+      },
+      "hc1_room_set_temp": {
+        "name": "Room target temperature"
+      },
+      "hc1_inside_temp_rc": {
+        "name": "Room temperature (remote)"
+      },
+      "hc1_season_mode": {
+        "name": "Season mode",
+        "state": {
+          "winter": "Winter",
+          "summer": "Summer"
+        }
+      },
+      "hc1_op_mode": {
+        "name": "Heating circuit mode",
+        "state": {
+          "normal": "Normal",
+          "setback": "Setback",
+          "standby": "Standby",
+          "restart": "Restart"
+        }
+      },
+      "hc1_integral_heat": {
+        "name": "Heating integral"
+      },
+      "hc1_booster_stage": {
+        "name": "Booster stage heating"
+      },
+      "dhw_set_temp": {
+        "name": "Hot water target temperature"
+      },
+      "dhw_op_mode": {
+        "name": "Hot water mode",
+        "state": {
+          "normal": "Normal",
+          "setback": "Setback",
+          "standby": "Standby",
+          "restart": "Restart"
+        }
+      },
+      "dhw_booster_stage": {
+        "name": "Booster stage hot water"
+      },
+      "heat_request": {
+        "name": "Heat request"
+      },
+      "hc_stage": {
+        "name": "Heating stage"
+      },
+      "dhw_stage": {
+        "name": "Hot water stage"
+      },
+      "comp_block_time": {
+        "name": "Compressor block time"
+      },
+      "airflow_inlet": {
+        "name": "Supply airflow"
+      },
+      "airflow_outlet": {
+        "name": "Exhaust airflow"
+      },
+      "hours_compressor_heating": {
+        "name": "Compressor heating hours"
+      },
+      "hours_compressor_cooling": {
+        "name": "Compressor cooling hours"
+      },
+      "hours_compressor_dhw": {
+        "name": "Compressor hot water hours"
+      },
+      "hours_booster_dhw": {
+        "name": "Booster hot water hours"
+      },
+      "hours_booster_heating": {
+        "name": "Booster heating hours"
+      },
+      "number_of_faults": {
+        "name": "Number of faults"
+      },
+      "last_fault": {
+        "name": "Last fault"
+      },
+      "hc2_heat_set_temp": {
+        "name": "Flow target temperature HC2"
+      },
+      "hc2_op_mode": {
+        "name": "Heating circuit 2 mode",
+        "state": {
+          "normal": "Normal",
+          "setback": "Setback",
+          "standby": "Standby",
+          "restart": "Restart"
+        }
+      },
+      "solar_collector_temp": {
+        "name": "Solar collector temperature"
+      },
+      "solar_dhw_temp": {
+        "name": "Solar hot water temperature"
+      },
+      "energy_heat_hc_day": {
+        "name": "Heat produced heating today"
+      },
+      "energy_heat_hc_total": {
+        "name": "Heat produced heating total"
+      },
+      "energy_heat_dhw_day": {
+        "name": "Heat produced hot water today"
+      },
+      "energy_heat_dhw_total": {
+        "name": "Heat produced hot water total"
+      },
+      "energy_heat_recovered_day": {
+        "name": "Heat recovered today"
+      },
+      "energy_heat_recovered_total": {
+        "name": "Heat recovered total"
+      },
+      "energy_electr_hc_day": {
+        "name": "Electricity heating today"
+      },
+      "energy_electr_hc_total": {
+        "name": "Electricity heating total"
+      },
+      "energy_electr_dhw_day": {
+        "name": "Electricity hot water today"
+      },
+      "energy_electr_dhw_total": {
+        "name": "Electricity hot water total"
+      },
+      "energy_boost_dhw_total": {
+        "name": "Booster hot water total"
+      },
+      "energy_boost_hc_total": {
+        "name": "Booster heating total"
+      }
+    },
+    "binary_sensor": {
+      "compressor": {
+        "name": "Compressor"
+      },
+      "heating_circuit_pump": {
+        "name": "Heating circuit pump"
+      },
+      "dhw_pump": {
+        "name": "Hot water pump"
+      },
+      "solar_pump": {
+        "name": "Solar pump"
+      },
+      "booster_stage_1": {
+        "name": "Booster stage 1"
+      },
+      "booster_stage_2": {
+        "name": "Booster stage 2"
+      },
+      "booster_stage_3": {
+        "name": "Booster stage 3"
+      },
+      "diverter_valve": {
+        "name": "Diverter valve"
+      },
+      "heat_pipe_valve": {
+        "name": "Heat pipe valve"
+      },
+      "mixer_open": {
+        "name": "Mixer opening"
+      },
+      "mixer_closed": {
+        "name": "Mixer closing"
+      },
+      "evu_release": {
+        "name": "Utility release (EVU)"
+      },
+      "window_open": {
+        "name": "Window open"
+      },
+      "quick_air_vent": {
+        "name": "Quick vent input"
+      },
+      "oven_fireplace": {
+        "name": "Oven / fireplace input"
+      },
+      "stb": {
+        "name": "Safety temperature limiter"
+      },
+      "high_pressure_sensor": {
+        "name": "High pressure sensor"
+      },
+      "low_pressure_sensor": {
+        "name": "Low pressure sensor"
+      },
+      "evaporator_ice_monitor": {
+        "name": "Evaporator ice monitor"
+      },
+      "signal_anode": {
+        "name": "Anode signal"
+      },
+      "display_filter": {
+        "name": "Filter change"
+      },
+      "display_filter_up": {
+        "name": "Filter change (supply)"
+      },
+      "display_filter_down": {
+        "name": "Filter change (extract)"
+      },
+      "display_service": {
+        "name": "Service"
+      },
+      "display_defrost": {
+        "name": "Defrosting"
+      },
+      "display_cooling": {
+        "name": "Cooling"
+      },
+      "display_heating_hc": {
+        "name": "Heating"
+      },
+      "display_heating_dhw": {
+        "name": "Hot water heating"
+      },
+      "display_booster_hc": {
+        "name": "Booster heating"
+      },
+      "display_vent_stage": {
+        "name": "Ventilation stage"
+      },
+      "display_switching_prog": {
+        "name": "Switching program"
+      }
+    },
+    "number": {
+      "p01_room_temp_day": {
+        "name": "Room setpoint day"
+      },
+      "p02_room_temp_night": {
+        "name": "Room setpoint night"
+      },
+      "p04_dhw_temp_day": {
+        "name": "Hot water setpoint day"
+      },
+      "p05_dhw_temp_night": {
+        "name": "Hot water setpoint night"
+      },
+      "p43_unsched_vent_stage3": {
+        "name": "Unscheduled vent duration stage 3"
+      },
+      "p44_unsched_vent_stage2": {
+        "name": "Unscheduled vent duration stage 2"
+      },
+      "p45_unsched_vent_stage1": {
+        "name": "Unscheduled vent duration stage 1"
+      },
+      "p46_unsched_vent_stage0": {
+        "name": "Unscheduled vent duration stage 0"
+      },
+      "p13_gradient_hc1": {
+        "name": "Heating curve gradient (p13)"
+      },
+      "p14_low_end_hc1": {
+        "name": "Heating curve low end (p14)"
+      },
+      "p15_room_influence_hc1": {
+        "name": "Heating curve room influence (p15)"
+      }
+    },
+    "select": {
+      "op_mode": {
+        "name": "Operating mode",
+        "state": {
+          "automatic": "Automatic",
+          "day": "Day mode",
+          "setback": "Setback",
+          "dhw": "Hot water only",
+          "standby": "Standby",
+          "manual": "Manual",
+          "emergency": "Emergency"
+        }
+      },
+      "p07_fan_stage_day": {
+        "name": "Fan stage day",
+        "state": {
+          "stage_0": "Stage 0",
+          "stage_1": "Stage 1",
+          "stage_2": "Stage 2",
+          "stage_3": "Stage 3"
+        }
+      },
+      "p08_fan_stage_night": {
+        "name": "Fan stage night",
+        "state": {
+          "stage_0": "Stage 0",
+          "stage_1": "Stage 1",
+          "stage_2": "Stage 2",
+          "stage_3": "Stage 3"
+        }
+      },
+      "p09_fan_stage_standby": {
+        "name": "Fan stage standby",
+        "state": {
+          "stage_0": "Stage 0",
+          "stage_1": "Stage 1",
+          "stage_2": "Stage 2",
+          "stage_3": "Stage 3"
+        }
+      },
+      "p99_start_unsched_vent": {
+        "name": "Start unscheduled vent",
+        "state": {
+          "stage_0": "Stage 0",
+          "stage_1": "Stage 1",
+          "stage_2": "Stage 2",
+          "stage_3": "Stage 3"
+        }
+      }
+    },
+    "water_heater": {
+      "dhw": {
+        "name": "Hot water"
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Polling & features",
+        "description": "Poll intervals per register group (minimum 60 s). The interface is always served one telegram at a time.",
+        "data": {
+          "interval_status": "Status interval (temperatures, states)",
+          "interval_params": "Parameter interval (setpoints, fan stages)",
+          "interval_history": "History interval (operating hours, faults)",
+          "interval_energy": "Energy meter interval",
+          "enable_hc2": "Heating circuit 2 installed",
+          "enable_solar": "Solar system installed"
+        }
+      }
+    }
+  }
+}

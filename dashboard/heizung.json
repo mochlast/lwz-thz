@@ -1,0 +1,506 @@
+{
+  "views": [
+    {
+      "title": "Übersicht",
+      "path": "uebersicht",
+      "type": "sections",
+      "max_columns": 4,
+      "sections": [
+        {
+          "type": "grid",
+          "column_span": 4,
+          "cards": [
+            {
+              "type": "custom:mushroom-chips-card",
+              "alignment": "start",
+              "grid_options": {
+                "columns": "full"
+              },
+              "chips": [
+                {
+                  "type": "template",
+                  "icon": "mdi:heat-pump-outline",
+                  "icon_color": "{% if is_state('binary_sensor.lwz_304_trend_verdichter','on') %}orange{% else %}grey{% endif %}",
+                  "content": "{{ states('select.technikraum_lwz_304_trend_betriebsart') | replace('dhw','Nur Warmwasser') | replace('automatic','Automatik') | replace('day','Tagbetrieb') | replace('setback','Absenkbetrieb') | replace('standby','Bereitschaft') | replace('manual','Handbetrieb') | replace('emergency','Notbetrieb') }}",
+                  "tap_action": {
+                    "action": "more-info",
+                    "entity": "select.technikraum_lwz_304_trend_betriebsart"
+                  }
+                },
+                {
+                  "type": "conditional",
+                  "conditions": [
+                    {
+                      "entity": "binary_sensor.lwz_304_trend_verdichter",
+                      "state": "on"
+                    }
+                  ],
+                  "chip": {
+                    "type": "template",
+                    "entity": "binary_sensor.lwz_304_trend_verdichter",
+                    "icon": "mdi:heat-pump",
+                    "icon_color": "orange",
+                    "content": "Verdichter",
+                    "tap_action": {
+                      "action": "more-info"
+                    }
+                  }
+                },
+                {
+                  "type": "conditional",
+                  "conditions": [
+                    {
+                      "entity": "binary_sensor.lwz_304_trend_heizen",
+                      "state": "on"
+                    }
+                  ],
+                  "chip": {
+                    "type": "template",
+                    "entity": "binary_sensor.lwz_304_trend_heizen",
+                    "icon": "mdi:radiator",
+                    "icon_color": "red",
+                    "content": "Heizen",
+                    "tap_action": {
+                      "action": "more-info"
+                    }
+                  }
+                },
+                {
+                  "type": "conditional",
+                  "conditions": [
+                    {
+                      "entity": "binary_sensor.lwz_304_trend_warmwasserbereitung",
+                      "state": "on"
+                    }
+                  ],
+                  "chip": {
+                    "type": "template",
+                    "entity": "binary_sensor.lwz_304_trend_warmwasserbereitung",
+                    "icon": "mdi:water-boiler",
+                    "icon_color": "blue",
+                    "content": "Warmwasser",
+                    "tap_action": {
+                      "action": "more-info"
+                    }
+                  }
+                },
+                {
+                  "type": "conditional",
+                  "conditions": [
+                    {
+                      "entity": "binary_sensor.lwz_304_trend_booster_stufe_1",
+                      "state": "on"
+                    }
+                  ],
+                  "chip": {
+                    "type": "template",
+                    "entity": "binary_sensor.lwz_304_trend_booster_stufe_1",
+                    "icon": "mdi:heating-coil",
+                    "icon_color": "deep-orange",
+                    "content": "Heizstab",
+                    "tap_action": {
+                      "action": "more-info"
+                    }
+                  }
+                },
+                {
+                  "type": "conditional",
+                  "conditions": [
+                    {
+                      "entity": "binary_sensor.lwz_304_trend_abtauung",
+                      "state": "on"
+                    }
+                  ],
+                  "chip": {
+                    "type": "template",
+                    "entity": "binary_sensor.lwz_304_trend_abtauung",
+                    "icon": "mdi:snowflake-melt",
+                    "icon_color": "cyan",
+                    "content": "Abtauung",
+                    "tap_action": {
+                      "action": "more-info"
+                    }
+                  }
+                },
+                {
+                  "type": "conditional",
+                  "conditions": [
+                    {
+                      "entity": "binary_sensor.lwz_304_trend_evu_freigabe",
+                      "state": "off"
+                    }
+                  ],
+                  "chip": {
+                    "type": "template",
+                    "entity": "binary_sensor.lwz_304_trend_evu_freigabe",
+                    "icon": "mdi:transmission-tower-off",
+                    "icon_color": "red",
+                    "content": "EVU-Sperre",
+                    "tap_action": {
+                      "action": "more-info"
+                    }
+                  }
+                },
+                {
+                  "type": "conditional",
+                  "conditions": [
+                    {
+                      "entity": "binary_sensor.lwz_304_trend_fenster_offen",
+                      "state": "on"
+                    }
+                  ],
+                  "chip": {
+                    "type": "template",
+                    "entity": "binary_sensor.lwz_304_trend_fenster_offen",
+                    "icon": "mdi:window-open-variant",
+                    "icon_color": "amber",
+                    "content": "Fenster offen",
+                    "tap_action": {
+                      "action": "more-info"
+                    }
+                  }
+                },
+                {
+                  "type": "conditional",
+                  "conditions": [
+                    {
+                      "entity": "binary_sensor.lwz_304_trend_filterwechsel",
+                      "state": "on"
+                    }
+                  ],
+                  "chip": {
+                    "type": "template",
+                    "entity": "binary_sensor.lwz_304_trend_filterwechsel",
+                    "icon": "mdi:air-filter",
+                    "icon_color": "red",
+                    "content": "Filterwechsel",
+                    "tap_action": {
+                      "action": "more-info"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Wärmepumpe",
+          "type": "grid",
+          "column_span": 2,
+          "cards": [
+            {
+              "type": "custom:mushroom-template-card",
+              "grid_options": {
+                "columns": "full"
+              },
+              "primary": "LWZ 304 Trend",
+              "secondary": "{% if is_state('binary_sensor.lwz_304_trend_warmwasserbereitung','on') %}Warmwasserbereitung läuft{% elif is_state('binary_sensor.lwz_304_trend_heizen','on') %}Heizbetrieb{% elif is_state('binary_sensor.lwz_304_trend_verdichter','on') %}Verdichter läuft{% else %}Bereit{% endif %} · Außen {{ states('sensor.lwz_304_trend_aussentemperatur') | replace('.', ',') }} °C",
+              "icon": "mdi:heat-pump",
+              "icon_color": "{% if is_state('binary_sensor.lwz_304_trend_warmwasserbereitung','on') %}blue{% elif is_state('binary_sensor.lwz_304_trend_heizen','on') %}red{% elif is_state('binary_sensor.lwz_304_trend_verdichter','on') %}orange{% else %}disabled{% endif %}",
+              "badge_icon": "{% if is_state('binary_sensor.lwz_304_trend_filterwechsel','on') %}mdi:air-filter{% endif %}",
+              "badge_color": "red",
+              "tap_action": {
+                "action": "navigate",
+                "navigation_path": "/config/devices/device/5d442c2bdc3340f2989ba4b22db87c26"
+              }
+            },
+            {
+              "type": "custom:mushroom-select-card",
+              "grid_options": {
+                "columns": "full"
+              },
+              "entity": "select.technikraum_lwz_304_trend_betriebsart",
+              "name": "Betriebsart",
+              "icon": "mdi:heat-pump-outline"
+            },
+            {
+              "type": "grid",
+              "grid_options": {
+                "columns": "full"
+              },
+              "columns": 2,
+              "square": false,
+              "cards": [
+                {
+                  "type": "custom:mushroom-entity-card",
+                  "entity": "sensor.lwz_304_trend_aussentemperatur",
+                  "name": "Außen",
+                  "icon": "mdi:thermometer",
+                  "icon_color": "grey"
+                },
+                {
+                  "type": "custom:mushroom-entity-card",
+                  "entity": "sensor.lwz_304_trend_raumtemperatur_fernbedienung",
+                  "name": "Raum",
+                  "icon": "mdi:home-thermometer",
+                  "icon_color": "amber"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Warmwasser",
+          "type": "grid",
+          "column_span": 2,
+          "cards": [
+            {
+              "type": "grid",
+              "grid_options": {
+                "columns": "full"
+              },
+              "columns": 2,
+              "square": false,
+              "cards": [
+                {
+                  "type": "custom:mushroom-template-card",
+                  "primary": "Temperatur",
+                  "secondary": "{{ states('sensor.lwz_304_trend_warmwassertemperatur') | replace('.', ',') }} °C · Soll {{ states('sensor.lwz_304_trend_warmwasser_solltemperatur') | replace('.', ',') }} °C",
+                  "icon": "mdi:water-thermometer",
+                  "icon_color": "{% if is_state('binary_sensor.lwz_304_trend_warmwasserbereitung','on') %}blue{% else %}light-blue{% endif %}",
+                  "entity": "sensor.lwz_304_trend_warmwassertemperatur",
+                  "tap_action": {
+                    "action": "more-info"
+                  }
+                },
+                {
+                  "type": "custom:mushroom-template-card",
+                  "primary": "Zirkulation",
+                  "secondary": "{{ 'Läuft' if is_state('switch.shelly1_zirkulationspumpe','on') else 'Aus' }}",
+                  "icon": "mdi:pump",
+                  "icon_color": "{{ 'teal' if is_state('switch.shelly1_zirkulationspumpe','on') else 'disabled' }}",
+                  "entity": "switch.shelly1_zirkulationspumpe",
+                  "tap_action": {
+                    "action": "toggle"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "grid_options": {
+                "columns": "full"
+              },
+              "columns": 2,
+              "square": false,
+              "cards": [
+                {
+                  "type": "custom:mushroom-number-card",
+                  "entity": "number.technikraum_lwz_304_trend_warmwasser_soll_tag",
+                  "name": "Soll Tag",
+                  "icon": "mdi:sun-thermometer",
+                  "display_mode": "buttons"
+                },
+                {
+                  "type": "custom:mushroom-number-card",
+                  "entity": "number.technikraum_lwz_304_trend_warmwasser_soll_nacht",
+                  "name": "Soll Nacht",
+                  "icon": "mdi:weather-night",
+                  "display_mode": "buttons"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Heizen",
+          "type": "grid",
+          "column_span": 2,
+          "cards": [
+            {
+              "type": "grid",
+              "grid_options": {
+                "columns": "full"
+              },
+              "columns": 2,
+              "square": false,
+              "cards": [
+                {
+                  "type": "custom:mushroom-number-card",
+                  "entity": "number.technikraum_lwz_304_trend_raum_soll_tag",
+                  "name": "Raum-Soll Tag",
+                  "icon": "mdi:sun-thermometer",
+                  "display_mode": "buttons"
+                },
+                {
+                  "type": "custom:mushroom-number-card",
+                  "entity": "number.technikraum_lwz_304_trend_raum_soll_nacht",
+                  "name": "Raum-Soll Nacht",
+                  "icon": "mdi:weather-night",
+                  "display_mode": "buttons"
+                }
+              ]
+            },
+            {
+              "type": "custom:mushroom-template-card",
+              "grid_options": {
+                "columns": "full"
+              },
+              "primary": "Vorlauf",
+              "secondary": "{{ states('sensor.lwz_304_trend_vorlauftemperatur') | replace('.', ',') }} °C · Soll {{ states('sensor.lwz_304_trend_vorlauf_solltemperatur') | replace('.', ',') }} °C",
+              "icon": "mdi:thermometer-chevron-up",
+              "icon_color": "{% if is_state('binary_sensor.lwz_304_trend_heizen','on') %}red{% else %}disabled{% endif %}",
+              "entity": "sensor.lwz_304_trend_vorlauftemperatur",
+              "tap_action": {
+                "action": "more-info"
+              }
+            }
+          ]
+        },
+        {
+          "title": "Lüftung",
+          "type": "grid",
+          "column_span": 2,
+          "cards": [
+            {
+              "type": "grid",
+              "grid_options": {
+                "columns": "full"
+              },
+              "columns": 2,
+              "square": false,
+              "cards": [
+                {
+                  "type": "custom:mushroom-select-card",
+                  "entity": "select.technikraum_lwz_304_trend_lufterstufe_tag",
+                  "name": "Stufe Tag",
+                  "icon": "mdi:fan"
+                },
+                {
+                  "type": "custom:mushroom-select-card",
+                  "entity": "select.technikraum_lwz_304_trend_lufterstufe_nacht",
+                  "name": "Stufe Nacht",
+                  "icon": "mdi:fan-minus"
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "grid_options": {
+                "columns": "full"
+              },
+              "columns": 2,
+              "square": false,
+              "cards": [
+                {
+                  "type": "custom:mushroom-select-card",
+                  "entity": "select.technikraum_lwz_304_trend_sonderluftung_starten",
+                  "name": "Sonderlüftung",
+                  "icon": "mdi:fan-plus"
+                },
+                {
+                  "type": "custom:mushroom-template-card",
+                  "primary": "Abluftfeuchte",
+                  "secondary": "{{ states('sensor.lwz_304_trend_abluftfeuchte') | float(0) | round(0) }} %",
+                  "icon": "mdi:water-percent",
+                  "icon_color": "{% set h = states('sensor.lwz_304_trend_abluftfeuchte') | float(0) %}{% if h > 65 %}red{% elif h > 55 %}amber{% else %}teal{% endif %}",
+                  "entity": "sensor.lwz_304_trend_abluftfeuchte",
+                  "tap_action": {
+                    "action": "more-info"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Energie & Effizienz",
+          "type": "grid",
+          "column_span": 4,
+          "cards": [
+            {
+              "type": "grid",
+              "grid_options": {
+                "columns": "full"
+              },
+              "columns": 4,
+              "square": false,
+              "cards": [
+                {
+                  "type": "custom:mushroom-template-card",
+                  "primary": "AZ Heizen",
+                  "secondary": "{{ states('sensor.lwz_arbeitszahl_heizen_heute') | replace('.', ',') }} heute",
+                  "icon": "mdi:gauge",
+                  "icon_color": "{% set v = states('sensor.lwz_arbeitszahl_heizen_heute') | float(0) %}{% if v >= 3 %}green{% elif v >= 2 %}amber{% elif v > 0 %}red{% else %}disabled{% endif %}",
+                  "entity": "sensor.lwz_arbeitszahl_heizen_heute",
+                  "tap_action": {
+                    "action": "more-info"
+                  }
+                },
+                {
+                  "type": "custom:mushroom-template-card",
+                  "primary": "AZ Warmwasser",
+                  "secondary": "{{ states('sensor.lwz_arbeitszahl_warmwasser_heute') | replace('.', ',') }} heute",
+                  "icon": "mdi:gauge",
+                  "icon_color": "{% set v = states('sensor.lwz_arbeitszahl_warmwasser_heute') | float(0) %}{% if v >= 2.5 %}green{% elif v >= 1.5 %}amber{% elif v > 0 %}red{% else %}disabled{% endif %}",
+                  "entity": "sensor.lwz_arbeitszahl_warmwasser_heute",
+                  "tap_action": {
+                    "action": "more-info"
+                  }
+                },
+                {
+                  "type": "custom:mushroom-template-card",
+                  "primary": "Strom Heizen",
+                  "secondary": "{{ ((states('sensor.technikraum_lwz_304_trend_stromverbrauch_heizen_heute') | float(0) / 1000) | round(1)) | string | replace('.', ',') }} kWh heute",
+                  "icon": "mdi:lightning-bolt",
+                  "icon_color": "blue",
+                  "entity": "sensor.technikraum_lwz_304_trend_stromverbrauch_heizen_heute",
+                  "tap_action": {
+                    "action": "more-info"
+                  }
+                },
+                {
+                  "type": "custom:mushroom-template-card",
+                  "primary": "Strom Warmwasser",
+                  "secondary": "{{ ((states('sensor.technikraum_lwz_304_trend_stromverbrauch_warmwasser_heute') | float(0) / 1000) | round(1)) | string | replace('.', ',') }} kWh heute",
+                  "icon": "mdi:lightning-bolt",
+                  "icon_color": "teal",
+                  "entity": "sensor.technikraum_lwz_304_trend_stromverbrauch_warmwasser_heute",
+                  "tap_action": {
+                    "action": "more-info"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "custom:mushroom-chips-card",
+              "grid_options": {
+                "columns": "full"
+              },
+              "alignment": "start",
+              "chips": [
+                {
+                  "type": "template",
+                  "icon": "mdi:chart-bell-curve-cumulative",
+                  "content": "Graphen",
+                  "tap_action": {
+                    "action": "navigate",
+                    "navigation_path": "/lwz-graphen/verlaeufe"
+                  }
+                },
+                {
+                  "type": "template",
+                  "icon": "mdi:lightning-bolt",
+                  "content": "Energie-Dashboard",
+                  "tap_action": {
+                    "action": "navigate",
+                    "navigation_path": "/energy"
+                  }
+                },
+                {
+                  "type": "template",
+                  "icon": "mdi:tune",
+                  "content": "Alle Einstellungen",
+                  "tap_action": {
+                    "action": "navigate",
+                    "navigation_path": "/config/devices/device/5d442c2bdc3340f2989ba4b22db87c26"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
