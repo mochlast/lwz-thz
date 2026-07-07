@@ -400,6 +400,213 @@
                   }
                 }
               ]
+            },
+            {
+              "type": "grid",
+              "grid_options": {
+                "columns": "full"
+              },
+              "columns": 2,
+              "square": false,
+              "cards": [
+                {
+                  "type": "custom:mushroom-number-card",
+                  "entity": "number.technikraum_lwz_304_trend_sonderluftung_dauer_stufe_0",
+                  "name": "Dauer Stufe 0",
+                  "icon": "mdi:timer-outline",
+                  "display_mode": "buttons"
+                },
+                {
+                  "type": "custom:mushroom-number-card",
+                  "entity": "number.technikraum_lwz_304_trend_sonderluftung_dauer_stufe_1",
+                  "name": "Dauer Stufe 1",
+                  "icon": "mdi:timer-outline",
+                  "display_mode": "buttons"
+                },
+                {
+                  "type": "custom:mushroom-number-card",
+                  "entity": "number.technikraum_lwz_304_trend_sonderluftung_dauer_stufe_2",
+                  "name": "Dauer Stufe 2",
+                  "icon": "mdi:timer-outline",
+                  "display_mode": "buttons"
+                },
+                {
+                  "type": "custom:mushroom-number-card",
+                  "entity": "number.technikraum_lwz_304_trend_sonderluftung_dauer_stufe_3",
+                  "name": "Dauer Stufe 3",
+                  "icon": "mdi:timer-outline",
+                  "display_mode": "buttons"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Zeitprogramme (Mo–So)",
+          "type": "grid",
+          "column_span": 4,
+          "cards": [
+            {
+              "type": "entities",
+              "title": "Heizen",
+              "grid_options": {
+                "columns": 4
+              },
+              "entities": [
+                {
+                  "entity": "switch.technikraum_lwz_304_trend_heizprogramm_1_aktiv",
+                  "name": "Zeitfenster 1",
+                  "icon": "mdi:radiator"
+                },
+                {
+                  "entity": "time.technikraum_lwz_304_trend_heizprogramm_1_start",
+                  "name": "Start"
+                },
+                {
+                  "entity": "time.technikraum_lwz_304_trend_heizprogramm_1_ende",
+                  "name": "Ende"
+                },
+                {
+                  "type": "divider"
+                },
+                {
+                  "entity": "switch.technikraum_lwz_304_trend_heizprogramm_2_aktiv",
+                  "name": "Zeitfenster 2",
+                  "icon": "mdi:radiator"
+                },
+                {
+                  "entity": "time.technikraum_lwz_304_trend_heizprogramm_2_start",
+                  "name": "Start"
+                },
+                {
+                  "entity": "time.technikraum_lwz_304_trend_heizprogramm_2_ende",
+                  "name": "Ende"
+                },
+                {
+                  "type": "divider"
+                },
+                {
+                  "entity": "switch.technikraum_lwz_304_trend_heizprogramm_3_aktiv",
+                  "name": "Zeitfenster 3",
+                  "icon": "mdi:radiator"
+                },
+                {
+                  "entity": "time.technikraum_lwz_304_trend_heizprogramm_3_start",
+                  "name": "Start"
+                },
+                {
+                  "entity": "time.technikraum_lwz_304_trend_heizprogramm_3_ende",
+                  "name": "Ende"
+                }
+              ]
+            },
+            {
+              "type": "entities",
+              "title": "Warmwasser",
+              "grid_options": {
+                "columns": 4
+              },
+              "entities": [
+                {
+                  "entity": "switch.technikraum_lwz_304_trend_warmwasserprogramm_1_aktiv",
+                  "name": "Zeitfenster 1",
+                  "icon": "mdi:water-boiler"
+                },
+                {
+                  "entity": "time.technikraum_lwz_304_trend_warmwasserprogramm_1_start",
+                  "name": "Start"
+                },
+                {
+                  "entity": "time.technikraum_lwz_304_trend_warmwasserprogramm_1_ende",
+                  "name": "Ende"
+                },
+                {
+                  "type": "divider"
+                },
+                {
+                  "entity": "switch.technikraum_lwz_304_trend_warmwasserprogramm_2_aktiv",
+                  "name": "Zeitfenster 2",
+                  "icon": "mdi:water-boiler"
+                },
+                {
+                  "entity": "time.technikraum_lwz_304_trend_warmwasserprogramm_2_start",
+                  "name": "Start"
+                },
+                {
+                  "entity": "time.technikraum_lwz_304_trend_warmwasserprogramm_2_ende",
+                  "name": "Ende"
+                },
+                {
+                  "type": "divider"
+                },
+                {
+                  "entity": "switch.technikraum_lwz_304_trend_warmwasserprogramm_3_aktiv",
+                  "name": "Zeitfenster 3",
+                  "icon": "mdi:water-boiler"
+                },
+                {
+                  "entity": "time.technikraum_lwz_304_trend_warmwasserprogramm_3_start",
+                  "name": "Start"
+                },
+                {
+                  "entity": "time.technikraum_lwz_304_trend_warmwasserprogramm_3_ende",
+                  "name": "Ende"
+                }
+              ]
+            },
+            {
+              "type": "entities",
+              "title": "Lüftung",
+              "grid_options": {
+                "columns": 4
+              },
+              "entities": [
+                {
+                  "entity": "switch.technikraum_lwz_304_trend_luftungsprogramm_1_aktiv",
+                  "name": "Zeitfenster 1",
+                  "icon": "mdi:fan-clock"
+                },
+                {
+                  "entity": "time.technikraum_lwz_304_trend_luftungsprogramm_1_start",
+                  "name": "Start"
+                },
+                {
+                  "entity": "time.technikraum_lwz_304_trend_luftungsprogramm_1_ende",
+                  "name": "Ende"
+                },
+                {
+                  "type": "divider"
+                },
+                {
+                  "entity": "switch.technikraum_lwz_304_trend_luftungsprogramm_2_aktiv",
+                  "name": "Zeitfenster 2",
+                  "icon": "mdi:fan-clock"
+                },
+                {
+                  "entity": "time.technikraum_lwz_304_trend_luftungsprogramm_2_start",
+                  "name": "Start"
+                },
+                {
+                  "entity": "time.technikraum_lwz_304_trend_luftungsprogramm_2_ende",
+                  "name": "Ende"
+                },
+                {
+                  "type": "divider"
+                },
+                {
+                  "entity": "switch.technikraum_lwz_304_trend_luftungsprogramm_3_aktiv",
+                  "name": "Zeitfenster 3",
+                  "icon": "mdi:fan-clock"
+                },
+                {
+                  "entity": "time.technikraum_lwz_304_trend_luftungsprogramm_3_start",
+                  "name": "Start"
+                },
+                {
+                  "entity": "time.technikraum_lwz_304_trend_luftungsprogramm_3_ende",
+                  "name": "Ende"
+                }
+              ]
             }
           ]
         },
