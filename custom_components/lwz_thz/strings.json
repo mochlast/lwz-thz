@@ -438,6 +438,91 @@
       "dhw": {
         "name": "Hot water"
       }
+    },
+    "time": {
+      "prog_hc1_1_start": {
+        "name": "Heating program 1 start"
+      },
+      "prog_hc1_1_end": {
+        "name": "Heating program 1 end"
+      },
+      "prog_hc1_2_start": {
+        "name": "Heating program 2 start"
+      },
+      "prog_hc1_2_end": {
+        "name": "Heating program 2 end"
+      },
+      "prog_hc1_3_start": {
+        "name": "Heating program 3 start"
+      },
+      "prog_hc1_3_end": {
+        "name": "Heating program 3 end"
+      },
+      "prog_dhw_1_start": {
+        "name": "Hot water program 1 start"
+      },
+      "prog_dhw_1_end": {
+        "name": "Hot water program 1 end"
+      },
+      "prog_dhw_2_start": {
+        "name": "Hot water program 2 start"
+      },
+      "prog_dhw_2_end": {
+        "name": "Hot water program 2 end"
+      },
+      "prog_dhw_3_start": {
+        "name": "Hot water program 3 start"
+      },
+      "prog_dhw_3_end": {
+        "name": "Hot water program 3 end"
+      },
+      "prog_fan_1_start": {
+        "name": "Ventilation program 1 start"
+      },
+      "prog_fan_1_end": {
+        "name": "Ventilation program 1 end"
+      },
+      "prog_fan_2_start": {
+        "name": "Ventilation program 2 start"
+      },
+      "prog_fan_2_end": {
+        "name": "Ventilation program 2 end"
+      },
+      "prog_fan_3_start": {
+        "name": "Ventilation program 3 start"
+      },
+      "prog_fan_3_end": {
+        "name": "Ventilation program 3 end"
+      }
+    },
+    "switch": {
+      "prog_hc1_1_active": {
+        "name": "Heating program 1 active"
+      },
+      "prog_hc1_2_active": {
+        "name": "Heating program 2 active"
+      },
+      "prog_hc1_3_active": {
+        "name": "Heating program 3 active"
+      },
+      "prog_dhw_1_active": {
+        "name": "Hot water program 1 active"
+      },
+      "prog_dhw_2_active": {
+        "name": "Hot water program 2 active"
+      },
+      "prog_dhw_3_active": {
+        "name": "Hot water program 3 active"
+      },
+      "prog_fan_1_active": {
+        "name": "Ventilation program 1 active"
+      },
+      "prog_fan_2_active": {
+        "name": "Ventilation program 2 active"
+      },
+      "prog_fan_3_active": {
+        "name": "Ventilation program 3 active"
+      }
     }
   },
   "options": {

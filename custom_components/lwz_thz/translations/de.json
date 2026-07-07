@@ -438,6 +438,91 @@
       "dhw": {
         "name": "Warmwasser"
       }
+    },
+    "time": {
+      "prog_hc1_1_start": {
+        "name": "Heizprogramm 1 Start"
+      },
+      "prog_hc1_1_end": {
+        "name": "Heizprogramm 1 Ende"
+      },
+      "prog_hc1_2_start": {
+        "name": "Heizprogramm 2 Start"
+      },
+      "prog_hc1_2_end": {
+        "name": "Heizprogramm 2 Ende"
+      },
+      "prog_hc1_3_start": {
+        "name": "Heizprogramm 3 Start"
+      },
+      "prog_hc1_3_end": {
+        "name": "Heizprogramm 3 Ende"
+      },
+      "prog_dhw_1_start": {
+        "name": "Warmwasserprogramm 1 Start"
+      },
+      "prog_dhw_1_end": {
+        "name": "Warmwasserprogramm 1 Ende"
+      },
+      "prog_dhw_2_start": {
+        "name": "Warmwasserprogramm 2 Start"
+      },
+      "prog_dhw_2_end": {
+        "name": "Warmwasserprogramm 2 Ende"
+      },
+      "prog_dhw_3_start": {
+        "name": "Warmwasserprogramm 3 Start"
+      },
+      "prog_dhw_3_end": {
+        "name": "Warmwasserprogramm 3 Ende"
+      },
+      "prog_fan_1_start": {
+        "name": "Lüftungsprogramm 1 Start"
+      },
+      "prog_fan_1_end": {
+        "name": "Lüftungsprogramm 1 Ende"
+      },
+      "prog_fan_2_start": {
+        "name": "Lüftungsprogramm 2 Start"
+      },
+      "prog_fan_2_end": {
+        "name": "Lüftungsprogramm 2 Ende"
+      },
+      "prog_fan_3_start": {
+        "name": "Lüftungsprogramm 3 Start"
+      },
+      "prog_fan_3_end": {
+        "name": "Lüftungsprogramm 3 Ende"
+      }
+    },
+    "switch": {
+      "prog_hc1_1_active": {
+        "name": "Heizprogramm 1 aktiv"
+      },
+      "prog_hc1_2_active": {
+        "name": "Heizprogramm 2 aktiv"
+      },
+      "prog_hc1_3_active": {
+        "name": "Heizprogramm 3 aktiv"
+      },
+      "prog_dhw_1_active": {
+        "name": "Warmwasserprogramm 1 aktiv"
+      },
+      "prog_dhw_2_active": {
+        "name": "Warmwasserprogramm 2 aktiv"
+      },
+      "prog_dhw_3_active": {
+        "name": "Warmwasserprogramm 3 aktiv"
+      },
+      "prog_fan_1_active": {
+        "name": "Lüftungsprogramm 1 aktiv"
+      },
+      "prog_fan_2_active": {
+        "name": "Lüftungsprogramm 2 aktiv"
+      },
+      "prog_fan_3_active": {
+        "name": "Lüftungsprogramm 3 aktiv"
+      }
     }
   },
   "options": {

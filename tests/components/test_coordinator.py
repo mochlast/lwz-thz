@@ -53,6 +53,7 @@ class TestUpdateData:
         # 6 status blocks + 2 history blocks
         assert mock_client.read_block.await_count == 8
         assert mock_client.read_param.await_count == 16
+        assert mock_client.read_program.await_count == 9
         assert mock_client.read_energy.await_count == 12
 
     async def test_groups_not_due_are_skipped(

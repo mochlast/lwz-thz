@@ -54,6 +54,17 @@ def mock_client() -> MagicMock:
     }
     client.read_param = AsyncMock(side_effect=lambda key: param_data.get(key, 0))
     client.write_param = AsyncMock(side_effect=lambda key, value: value)
+
+    from datetime import time as dtime
+
+    program_data = {
+        "dhw_1": (dtime(7, 0), dtime(14, 0)),
+        "hc1_1": (dtime(6, 0), dtime(22, 0)),
+    }
+    client.read_program = AsyncMock(
+        side_effect=lambda key: program_data.get(key, (None, None))
+    )
+    client.write_program = AsyncMock(side_effect=lambda key, start, end: (start, end))
     return client
 
 

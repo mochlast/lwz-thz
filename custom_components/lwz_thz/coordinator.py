@@ -35,6 +35,7 @@ from .const import (
     TICK_INTERVAL,
 )
 from .thzprotocol import ThzClient, ThzError, ThzNotConnectedError
+from .thzprotocol.programs import PROGRAM_SLOTS
 from .thzprotocol.registers import ENERGY
 from .thzprotocol.timing import GROUP_ERROR_BACKOFF, MIN_POLL_INTERVAL
 from .thzprotocol.writeparams import WRITE_PARAMS
@@ -79,6 +80,24 @@ class ParamRead:
         return {f"param.{self.param_key}": await client.read_param(self.param_key)}
 
 
+def _program_data(slot_key: str, start, end) -> dict[str, Any]:
+    return {
+        f"prog.{slot_key}.start": start.strftime("%H:%M") if start else None,
+        f"prog.{slot_key}.end": end.strftime("%H:%M") if end else None,
+    }
+
+
+@dataclass
+class ProgramRead:
+    """Read one weekly program window (Mo-So, Monday register)."""
+
+    slot_key: str
+
+    async def execute(self, client: ThzClient) -> dict[str, Any]:
+        start, end = await client.read_program(self.slot_key)
+        return _program_data(self.slot_key, start, end)
+
+
 @dataclass
 class PollGroup:
     """A set of reads sharing one poll interval."""
@@ -110,7 +129,8 @@ def build_groups(options: dict[str, Any]) -> list[PollGroup]:
         PollGroup(
             key="params",
             interval=interval(OPT_INTERVAL_PARAMS, DEFAULT_INTERVAL_PARAMS),
-            reads=tuple(ParamRead(key) for key in WRITE_PARAMS),
+            reads=tuple(ParamRead(key) for key in WRITE_PARAMS)
+            + tuple(ProgramRead(key) for key in PROGRAM_SLOTS),
         ),
         PollGroup(
             key="history",
@@ -209,4 +229,18 @@ class ThzCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             raise HomeAssistantError(f"writing {param_key} failed: {err}") from err
         data = dict(self.data or {})
         data[f"param.{param_key}"] = readback
+        self.async_set_updated_data(data)
+
+    async def async_write_program(self, slot_key: str, start, end) -> None:
+        """Write a program window (both halves) and push the read-back."""
+        try:
+            readback_start, readback_end = await self.client.write_program(
+                slot_key, start, end
+            )
+        except ThzError as err:
+            raise HomeAssistantError(
+                f"writing program {slot_key} failed: {err}"
+            ) from err
+        data = dict(self.data or {})
+        data.update(_program_data(slot_key, readback_start, readback_end))
         self.async_set_updated_data(data)

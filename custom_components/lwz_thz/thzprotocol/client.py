@@ -24,6 +24,7 @@ from .errors import (
     ThzProtocolError,
     ThzWriteVerifyError,
 )
+from .programs import PROGRAM_SLOTS, decode_slot, encode_slot, normalize_slot
 from .protocol import ThzProtocol
 from .registers import BLOCKS, ENERGY, parse_block, parse_energy_register
 from .timing import (
@@ -165,6 +166,32 @@ class ThzClient:
                 f"{param_key}: wrote {value!r}, device reports {readback!r}"
             )
         _LOGGER.info("wrote %s = %r (verified)", param_key, readback)
+        return readback
+
+    async def read_program(self, slot_key: str):
+        """Read a weekly program window (Monday register) -> (start, end)."""
+        slot = PROGRAM_SLOTS[slot_key]
+        payload = await self.request(slot.read_command)
+        return decode_slot(payload)
+
+    async def write_program(self, slot_key: str, start, end):
+        """Write a program window to the Mo-So group and all day registers.
+
+        ~10 telegrams (FHEM does the same for Mo-So sets); afterwards the
+        Monday register is read back and verified.
+        """
+        slot = PROGRAM_SLOTS[slot_key]
+        value_hex = encode_slot(start, end)
+        for command in slot.write_commands:
+            await self.request(command + value_hex, is_set=True)
+        await asyncio.sleep(SET_READBACK_DELAY)
+        readback = await self.read_program(slot_key)
+        expected = normalize_slot(start, end)
+        if readback != expected:
+            raise ThzWriteVerifyError(
+                f"program {slot_key}: wrote {expected}, device reports {readback}"
+            )
+        _LOGGER.info("wrote program %s = %s (verified)", slot_key, readback)
         return readback
 
     async def get_firmware(self) -> str:
