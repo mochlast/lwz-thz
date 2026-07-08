@@ -5,19 +5,28 @@ sequentially, so a single coordinator with a tick-based group scheduler is
 used instead of one coordinator per interval. The coordinator keeps a
 persistent data dict: groups retain their last values until they are due
 again. Data keys are qualified as ``<block>.<field>`` / ``energy.<meter>``.
+
+Program writes are staged: the new window is pushed into the data
+immediately (optimistic, all three entities of a slot update at once) and
+the ~10-telegram serial write runs debounced in the background, so rapid
+UI clicks coalesce into one write. Verified read-backs are shielded
+against poll ticks that read the register before the write finished.
 """
 
 from __future__ import annotations
 
+import asyncio
 from dataclasses import dataclass, field
-from datetime import timedelta
+from datetime import datetime, time as dt_time, timedelta
+from functools import partial
 import logging
 import time
 from typing import Any
 
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant
+from homeassistant.core import CALLBACK_TYPE, HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
+from homeassistant.helpers.event import async_call_later
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .const import (
@@ -33,9 +42,10 @@ from .const import (
     OPT_INTERVAL_PARAMS,
     OPT_INTERVAL_STATUS,
     TICK_INTERVAL,
+    WRITE_DEBOUNCE,
 )
 from .thzprotocol import ThzClient, ThzError, ThzNotConnectedError
-from .thzprotocol.programs import PROGRAM_SLOTS
+from .thzprotocol.programs import PROGRAM_SLOTS, normalize_slot
 from .thzprotocol.registers import ENERGY
 from .thzprotocol.timing import GROUP_ERROR_BACKOFF, MIN_POLL_INTERVAL
 from .thzprotocol.writeparams import WRITE_PARAMS
@@ -167,6 +177,14 @@ class ThzCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self.firmware: str = "unknown"
         self._groups = build_groups(dict(config_entry.options))
         self._disconnected_since: float | None = None
+        # Staged program writes: slot -> target window, debounce timer, lock.
+        self._prog_pending: dict[str, tuple[dt_time | None, dt_time | None]] = {}
+        self._prog_flush_cancel: dict[str, CALLBACK_TYPE] = {}
+        self._prog_locks: dict[str, asyncio.Lock] = {}
+        # Verified write results, shielded against in-flight poll ticks.
+        self._write_overrides: dict[str, tuple[float, Any]] = {}
+        # Last enabled window per slot ("HH:MM" strings), for turn_on restore.
+        self._last_windows: dict[str, tuple[str, str]] = {}
 
     async def _async_setup(self) -> None:
         try:
@@ -177,6 +195,7 @@ class ThzCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         _LOGGER.info("Connected to heat pump, firmware %s", self.firmware)
 
     async def _async_update_data(self) -> dict[str, Any]:
+        tick_start = time.monotonic()
         data = dict(self.data or {})
         now = time.monotonic()
         any_success = False
@@ -217,7 +236,52 @@ class ThzCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             and time.monotonic() - self._disconnected_since > STALE_CONNECTION_TIMEOUT
         ):
             raise UpdateFailed("connection to heat pump lost")
+
+        # A write that finished while this tick was collecting reads is newer
+        # than whatever the tick read before it — the read-back wins.
+        for key, (stamp, value) in list(self._write_overrides.items()):
+            if stamp >= tick_start:
+                data[key] = value
+            else:
+                del self._write_overrides[key]
+        # Staged-but-unwritten program changes always win over polled state.
+        for slot_key, (start, end) in self._prog_pending.items():
+            data.update(_program_data(slot_key, start, end))
+        self._remember_windows(data)
         return data
+
+    async def async_shutdown(self) -> None:
+        for cancel in self._prog_flush_cancel.values():
+            cancel()
+        self._prog_flush_cancel.clear()
+        if self._prog_pending:
+            _LOGGER.warning(
+                "shutdown drops unwritten program changes: %s",
+                ", ".join(self._prog_pending),
+            )
+            self._prog_pending.clear()
+        await super().async_shutdown()
+
+    def _push_write_data(self, updates: dict[str, Any]) -> None:
+        """Push verified values and shield them from in-flight poll merges."""
+        stamp = time.monotonic()
+        for key, value in updates.items():
+            self._write_overrides[key] = (stamp, value)
+        self._remember_windows(updates)
+        data = dict(self.data or {})
+        data.update(updates)
+        self.async_set_updated_data(data)
+
+    def _remember_windows(self, data: dict[str, Any]) -> None:
+        for slot_key in PROGRAM_SLOTS:
+            start = data.get(f"prog.{slot_key}.start")
+            end = data.get(f"prog.{slot_key}.end")
+            if start and end:
+                self._last_windows[slot_key] = (start, end)
+
+    def last_window(self, slot_key: str) -> tuple[str, str] | None:
+        """Last known enabled window of a slot as ``HH:MM`` strings."""
+        return self._last_windows.get(slot_key)
 
     async def async_write_param(self, param_key: str, value: float | str) -> None:
         """Write a parameter and push the verified read-back into the data."""
@@ -227,20 +291,53 @@ class ThzCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             raise HomeAssistantError(str(err)) from err
         except ThzError as err:
             raise HomeAssistantError(f"writing {param_key} failed: {err}") from err
-        data = dict(self.data or {})
-        data[f"param.{param_key}"] = readback
-        self.async_set_updated_data(data)
+        self._push_write_data({f"param.{param_key}": readback})
 
-    async def async_write_program(self, slot_key: str, start, end) -> None:
-        """Write a program window (both halves) and push the read-back."""
-        try:
-            readback_start, readback_end = await self.client.write_program(
-                slot_key, start, end
-            )
-        except ThzError as err:
-            raise HomeAssistantError(
-                f"writing program {slot_key} failed: {err}"
-            ) from err
+    def stage_program(
+        self, slot_key: str, start: dt_time | None, end: dt_time | None
+    ) -> None:
+        """Apply a program window optimistically and debounce the write.
+
+        All entities of the slot (switch, start, end) update immediately;
+        the ~10-telegram serial write starts after WRITE_DEBOUNCE seconds
+        of click silence, so rapid changes coalesce into one write.
+        """
+        start, end = normalize_slot(start, end)
+        self._prog_pending[slot_key] = (start, end)
         data = dict(self.data or {})
-        data.update(_program_data(slot_key, readback_start, readback_end))
+        data.update(_program_data(slot_key, start, end))
         self.async_set_updated_data(data)
+        if (cancel := self._prog_flush_cancel.pop(slot_key, None)) is not None:
+            cancel()
+        self._prog_flush_cancel[slot_key] = async_call_later(
+            self.hass, WRITE_DEBOUNCE, partial(self._async_flush_program, slot_key)
+        )
+
+    async def _async_flush_program(self, slot_key: str, _now: datetime) -> None:
+        self._prog_flush_cancel.pop(slot_key, None)
+        lock = self._prog_locks.setdefault(slot_key, asyncio.Lock())
+        async with lock:
+            target = self._prog_pending.get(slot_key)
+            if target is None:
+                return
+            try:
+                readback = await self.client.write_program(slot_key, *target)
+            except ThzError as err:
+                _LOGGER.warning("Writing program %s failed: %s", slot_key, err)
+                if self._prog_pending.get(slot_key) != target:
+                    return  # a newer change is staged; its flush will retry
+                self._prog_pending.pop(slot_key, None)
+                await self._async_reread_program(slot_key)
+                return
+            if self._prog_pending.get(slot_key) != target:
+                return  # superseded while writing; the newer flush follows
+            self._prog_pending.pop(slot_key, None)
+            self._push_write_data(_program_data(slot_key, *readback))
+
+    async def _async_reread_program(self, slot_key: str) -> None:
+        """Revert optimistic state to device truth after a failed write."""
+        try:
+            start, end = await self.client.read_program(slot_key)
+        except ThzError:
+            return  # stays optimistic until the next params poll corrects it
+        self._push_write_data(_program_data(slot_key, start, end))

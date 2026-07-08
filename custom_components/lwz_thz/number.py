@@ -16,6 +16,7 @@ from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from homeassistant.helpers.event import async_call_later
 
+from .const import WRITE_DEBOUNCE
 from .coordinator import ThzConfigEntry, ThzCoordinator
 from .descriptions import NUMBERS, ThzNumberDescription
 from .entity import ThzEntity
@@ -24,8 +25,6 @@ from .sensor import _enabled_features
 _LOGGER = logging.getLogger(__name__)
 
 PARALLEL_UPDATES = 1
-
-WRITE_DEBOUNCE = 1.0  # seconds of click silence before the value is written
 
 
 async def async_setup_entry(

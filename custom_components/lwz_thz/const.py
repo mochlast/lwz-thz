@@ -34,6 +34,10 @@ DEFAULT_INTERVAL_ENERGY = 3600
 # The coordinator ticks at this rate and only polls groups that are due.
 TICK_INTERVAL = 30
 
+# Seconds of click silence before a debounced write goes to the pump
+# (numbers and program windows update optimistically in between).
+WRITE_DEBOUNCE = 1.0
+
 # Feature identifiers used by entity descriptions
 FEATURE_HC2 = "hc2"
 FEATURE_SOLAR = "solar"

@@ -49,9 +49,19 @@ class ThzProgramSwitch(ThzEntity, SwitchEntity):
         return self._half("start") is not None
 
     async def async_turn_on(self, **kwargs: Any) -> None:
-        start = self._half("start") or DEFAULT_START
-        end = self._half("end") or DEFAULT_END
-        await self.coordinator.async_write_program(self._slot_key, start, end)
+        start = self._half("start")
+        end = self._half("end")
+        # Re-enabling restores the last known window, not the defaults.
+        if (
+            start is None
+            and end is None
+            and (remembered := self.coordinator.last_window(self._slot_key))
+        ):
+            start = parse_program_time(remembered[0])
+            end = parse_program_time(remembered[1])
+        self.coordinator.stage_program(
+            self._slot_key, start or DEFAULT_START, end or DEFAULT_END
+        )
 
     async def async_turn_off(self, **kwargs: Any) -> None:
-        await self.coordinator.async_write_program(self._slot_key, None, None)
+        self.coordinator.stage_program(self._slot_key, None, None)

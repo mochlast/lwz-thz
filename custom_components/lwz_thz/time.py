@@ -60,10 +60,15 @@ class ThzProgramTime(ThzEntity, TimeEntity):
     async def async_set_value(self, value: time) -> None:
         start = self._half("start")
         end = self._half("end")
+        remembered = self.coordinator.last_window(self._slot_key)
         if self._which == "start":
             start = value
+            if end is None and remembered:
+                end = parse_program_time(remembered[1])
             end = end or DEFAULT_END
         else:
             end = value
+            if start is None and remembered:
+                start = parse_program_time(remembered[0])
             start = start or DEFAULT_START
-        await self.coordinator.async_write_program(self._slot_key, start, end)
+        self.coordinator.stage_program(self._slot_key, start, end)
