@@ -90,7 +90,12 @@ Repository layout:
     handshake, transports, register tables, CLI); extractable to PyPI
 - `scripts/thz_cli.py` — CLI wrapper
 - `tests/` — pytest suite
-- `dashboard/` — dashboard templates + heating-curve custom card
+- `dashboard/` — dashboard templates + heating-curve custom card. The
+  control dashboard (`heizung.json`) is a Lovelace template built on the
+  HACS cards **Mushroom**, **button-card** and **stack-in-card**; its
+  advanced settings (weekly time programs, unscheduled-ventilation
+  durations) open in **browser_mod** popups, so install browser_mod and
+  add its integration before importing the dashboard.
 
 ## Credits & License
 
