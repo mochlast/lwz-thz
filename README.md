@@ -17,10 +17,8 @@ reconnect handling and per-group poll intervals.
   EVU release, defrost, filter-change and service indicators
 - **Write access** (verified with read-back): operating mode, room and DHW
   setpoints, fan stages, unscheduled ventilation, heating-curve parameters.
-  The allowed ranges follow the Stiebel Eltron operating manuals, not the
-  narrower FHEM constants — DHW setpoints go from 10 to 65 °C. Above roughly
-  55 °C the compressor alone no longer gets there and the electric booster
-  heater (NE) runs, which costs a lot of electricity.
+  Ranges follow the Stiebel Eltron operating manuals rather than the narrower
+  FHEM constants, and the unit itself has the last word — see below.
 - **climate** entity (heating circuit thermostat) and **water_heater** entity
 - **12 energy/heat meters**, energy-dashboard ready
 - **Configurable poll intervals** per register group (status / parameters /
@@ -68,6 +66,28 @@ is: the service interface reports a firmware version but no model, so the
 name shown in the device registry cannot be detected. Model, poll intervals
 and HC2/solar support are all changeable later via the integration's
 *Configure* dialog.
+
+### Write ranges
+
+The entities offer what the operating manuals list — DHW setpoints, for
+instance, run from 10 to 65 °C ("WW-Soll-Tag", identical in the manuals for
+LWZ 304 Integral/Trend, LWZ 304/404 SOL and LWZ 5/8 CS Premium).
+
+**Your unit may accept less than that.** Its firmware enforces its own limits
+on the service interface, and they can be narrower than what its display
+offers. A LWZ 304 Trend on firmware 5.09 takes a DHW setpoint of 55.0 °C but
+refuses 56.0 and above — even though 65 can be dialled in at the unit itself.
+
+A refused value is never silently lost. Every write is read back, so:
+
+- the **water heater** card raises the error straight into the UI
+- a **number** entity snaps back to the value the pump reports, and the reason
+  lands in the log:
+  `writing p04_dhw_temp_day = 60.0 failed: device refused this value — …`
+
+Also worth knowing: above roughly 55 °C the compressor alone no longer reaches
+the target, and the electric booster (NE) runs — which costs a lot of
+electricity.
 
 ## CLI (no Home Assistant required)
 

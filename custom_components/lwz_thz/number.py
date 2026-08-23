@@ -78,12 +78,9 @@ class ThzNumber(ThzEntity, NumberEntity):
                 self.entity_description.param_key, value
             )
         except HomeAssistantError as err:
-            _LOGGER.warning(
-                "Writing %s = %s failed, reverting to device value: %s",
-                self.entity_description.param_key,
-                value,
-                err,
-            )
+            # The write is debounced, so nothing can be raised at the user any
+            # more: the log line plus the value snapping back is the feedback.
+            _LOGGER.warning("%s; reverting to the value the pump reports", err)
         finally:
             # Only clear if no newer click arrived while we were writing.
             if self._pending_value == value:

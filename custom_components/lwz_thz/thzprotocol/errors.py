@@ -49,5 +49,16 @@ class ThzUnknownRegisterError(ThzProtocolError):
     """The device does not know the register (response header 01 04)."""
 
 
+class ThzValueRejectedError(ThzProtocolError):
+    """The device refused the written value (response header 01 05).
+
+    Observed on a LWZ 304 Trend: the control unit accepts a DHW setpoint of
+    55.0 °C but answers 01 05 for 56.0 and above, even though its own display
+    lets you dial in up to 65 °C. The answer carries a valid checksum and
+    echoes the register without a value, and the stored value stays unchanged.
+    FHEM does not decode this header either.
+    """
+
+
 class ThzWriteVerifyError(ThzError):
     """Read-back after a write returned a different value."""

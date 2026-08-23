@@ -26,6 +26,7 @@ from .errors import (
     ThzTimingError,
     ThzUnknownCommandError,
     ThzUnknownRegisterError,
+    ThzValueRejectedError,
 )
 
 STX = 0x02
@@ -44,6 +45,12 @@ _ERROR_HEADERS: dict[bytes, tuple[type[ThzProtocolError], str]] = {
     bytes((0x01, 0x04)): (
         ThzUnknownRegisterError,
         "device does not know this register",
+    ),
+    bytes((0x01, 0x05)): (
+        ThzValueRejectedError,
+        "device refused this value — outside the range its firmware accepts "
+        "over the service interface (which can be narrower than the range "
+        "the unit's own display offers)",
     ),
 }
 

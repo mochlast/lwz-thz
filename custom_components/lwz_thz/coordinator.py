@@ -290,7 +290,9 @@ class ThzCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         except ValueError as err:
             raise HomeAssistantError(str(err)) from err
         except ThzError as err:
-            raise HomeAssistantError(f"writing {param_key} failed: {err}") from err
+            raise HomeAssistantError(
+                f"writing {param_key} = {value!r} failed: {err}"
+            ) from err
         self._push_write_data({f"param.{param_key}": readback})
 
     def stage_program(

@@ -18,6 +18,7 @@ from .errors import (
     ThzTimingError,
     ThzUnknownCommandError,
     ThzUnknownRegisterError,
+    ThzValueRejectedError,
     ThzWriteVerifyError,
 )
 from .registers import (
@@ -52,6 +53,7 @@ __all__ = [
     "ThzTimingError",
     "ThzUnknownCommandError",
     "ThzUnknownRegisterError",
+    "ThzValueRejectedError",
     "ThzWriteVerifyError",
     "Transport",
     "WriteParamDef",

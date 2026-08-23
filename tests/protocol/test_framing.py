@@ -10,6 +10,7 @@ from thzprotocol.errors import (
     ThzTimingError,
     ThzUnknownCommandError,
     ThzUnknownRegisterError,
+    ThzValueRejectedError,
 )
 
 
@@ -96,11 +97,24 @@ class TestDecodeFrame:
             (b"\x01\x02", ThzChecksumError),
             (b"\x01\x03", ThzUnknownCommandError),
             (b"\x01\x04", ThzUnknownRegisterError),
+            (b"\x01\x05", ThzValueRejectedError),
         ],
     )
     def test_error_headers(self, header: bytes, exception: type[Exception]) -> None:
         with pytest.raises(exception):
             framing.decode_frame(header + b"\x00" + framing.FOOTER)
+
+    def test_value_rejected_frame_from_a_real_device(self) -> None:
+        """LWZ 304 Trend, firmware 5.09, answering a DHW setpoint of 60 C.
+
+        Recorded 2026-08-23. The unit takes 55.0 on register 0A0013 but
+        answers 01 05 from 56.0 upwards, while its own display offers 65.
+        The checksum is valid and the register is echoed without a value.
+        """
+        raw = bytes.fromhex("0105230A00131003")
+        assert raw[2] == framing.checksum(raw[:2], raw[3:-2])
+        with pytest.raises(ThzValueRejectedError, match="refused this value"):
+            framing.decode_frame(raw)
 
     def test_checksum_mismatch(self) -> None:
         raw = _response(b"\xfb", b"\x00\xe3")
