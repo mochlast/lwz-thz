@@ -26,7 +26,7 @@
       },
       "model": {
         "title": "Heat pump model",
-        "description": "Which unit is this? The service interface reports a firmware version but no model, so it cannot be detected. This is the name Home Assistant shows in the device registry. Not in the list? Just type it in.",
+        "description": "Which unit is this? The service interface reports a firmware version but no model, so it cannot be detected. This is the name Home Assistant shows in the device registry. Not in the list? Type your own — or leave it at “LWZ / THZ”.",
         "data": {
           "model": "Model"
         }

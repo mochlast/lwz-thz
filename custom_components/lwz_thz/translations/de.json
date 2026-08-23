@@ -26,7 +26,7 @@
       },
       "model": {
         "title": "Gerätemodell",
-        "description": "Welches Gerät ist das? Die Serviceschnittstelle meldet eine Firmware-Version, aber kein Modell — erkennen lässt es sich also nicht. Unter diesem Namen erscheint das Gerät im Geräteregister von Home Assistant. Nicht in der Liste? Einfach eintippen.",
+        "description": "Welches Gerät ist das? Die Serviceschnittstelle meldet eine Firmware-Version, aber kein Modell — erkennen lässt es sich also nicht. Unter diesem Namen erscheint das Gerät im Geräteregister von Home Assistant. Nicht in der Liste? Einfach selbst eintippen — oder bei „LWZ / THZ“ lassen.",
         "data": {
           "model": "Modell"
         }

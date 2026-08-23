@@ -9,6 +9,7 @@ from custom_components.lwz_thz.const import (
     CONNECTION_SERIAL,
     DEFAULT_MODEL,
     DOMAIN,
+    KNOWN_MODELS,
     OPT_MODEL,
     manufacturer_for,
     suggest_model,
@@ -71,6 +72,14 @@ async def test_entry_without_model_option_falls_back(
 )
 def test_manufacturer_for(model: str, expected: str) -> None:
     assert manufacturer_for(model) == expected
+
+
+def test_every_suggestable_default_is_offered_by_the_dropdown() -> None:
+    """A pre-selected value the list does not contain reads as a bug."""
+    for firmware in ("4.39", "5.09", "5.39", "2.06", None):
+        assert suggest_model(firmware) in KNOWN_MODELS
+    # Entries created before 0.8.0 fall back to this one in the options flow.
+    assert DEFAULT_MODEL in KNOWN_MODELS
 
 
 @pytest.mark.parametrize(

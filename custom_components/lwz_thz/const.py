@@ -48,8 +48,12 @@ OPT_MODEL = "model"
 DEFAULT_MODEL = "LWZ / THZ"
 
 # Suggestions for the model dropdown. Free text stays allowed (SelectSelector
-# custom_value=True), so this list need not be exhaustive.
+# custom_value=True), so this list need not be exhaustive. DEFAULT_MODEL leads
+# it as the "not listed / do not care" choice — it is also what suggest_model
+# falls back to and what entries created before 0.8.0 get, so every default the
+# dropdown can show is a real option in it.
 KNOWN_MODELS = [
+    DEFAULT_MODEL,
     "LWZ 303 SOL",
     "LWZ 403 SOL",
     "LWZ 304 Integral",
