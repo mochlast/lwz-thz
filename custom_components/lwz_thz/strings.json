@@ -23,6 +23,13 @@
           "host": "Host",
           "tcp_port": "Port"
         }
+      },
+      "model": {
+        "title": "Heat pump model",
+        "description": "Which unit is this? The service interface reports a firmware version but no model, so it cannot be detected. This is the name Home Assistant shows in the device registry. Not in the list? Just type it in.",
+        "data": {
+          "model": "Model"
+        }
       }
     },
     "error": {
@@ -531,6 +538,7 @@
         "title": "Polling & features",
         "description": "Poll intervals per register group (minimum 60 s). The interface is always served one telegram at a time.",
         "data": {
+          "model": "Heat pump model",
           "interval_status": "Status interval (temperatures, states)",
           "interval_params": "Parameter interval (setpoints, fan stages)",
           "interval_history": "History interval (operating hours, faults)",

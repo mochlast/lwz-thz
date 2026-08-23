@@ -24,9 +24,18 @@ class TestEncodeValue:
     def test_temp5_range_check(self) -> None:
         param = WRITE_PARAMS["p01_room_temp_day"]
         with pytest.raises(ValueError):
-            encode_value(param, 11.9)
+            encode_value(param, 9.9)
         with pytest.raises(ValueError):
             encode_value(param, 32.1)
+
+    def test_dhw_setpoint_reaches_manual_maximum(self) -> None:
+        # The operating manuals allow 10..65 °C for WW-Soll-Tag/-Nacht; FHEM's
+        # 55 was the temperature the unit reaches, not the settable range.
+        for key in ("p04_dhw_temp_day", "p05_dhw_temp_night"):
+            param = WRITE_PARAMS[key]
+            assert encode_value(param, 65.0) == "028A"
+            with pytest.raises(ValueError):
+                encode_value(param, 65.1)
 
     def test_clean1(self) -> None:
         assert encode_value(WRITE_PARAMS["p07_fan_stage_day"], 2) == "0002"

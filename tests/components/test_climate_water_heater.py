@@ -31,7 +31,7 @@ class TestClimate:
         assert state.state == "auto"  # param.op_mode = automatic
         assert state.attributes["current_temperature"] == 25.0
         assert state.attributes["temperature"] == 25.0  # p01 mock value
-        assert state.attributes["min_temp"] == 12
+        assert state.attributes["min_temp"] == 10
         assert state.attributes["max_temp"] == 32
 
     async def test_set_temperature_writes_p01(
@@ -73,6 +73,9 @@ class TestWaterHeater:
         state = hass.states.get(entity_id)
         assert state.attributes["current_temperature"] == 43.6
         assert state.attributes["temperature"] == 40.0  # p04 mock value
+        # Range per the operating manuals (WW-Soll-Tag), not FHEM's 55 cap.
+        assert state.attributes["min_temp"] == 10
+        assert state.attributes["max_temp"] == 65
 
         await hass.services.async_call(
             "water_heater",

@@ -102,15 +102,20 @@ def values_match(
     return round(float(readback)) == round(float(requested))
 
 
-# Practice set — commands and ranges verified against FHEM %sets439539common.
+# Practice set. Commands come from FHEM %sets439539common, but the min/max
+# ranges follow the Stiebel Eltron operating manuals ("Menüstruktur" tables of
+# LWZ 304 Integral/Trend, LWZ 304/404 SOL and LWZ 5/8 CS Premium — all three
+# agree). FHEM's hand-set argMin/argMax are narrower in several places; its
+# DHW cap of 55 °C is the temperature the unit reaches in normal operation,
+# not the settable range, which is 10..65 °C on every documented model.
 WRITE_PARAMS: dict[str, WriteParamDef] = {
     param.key: param
     for param in (
         WriteParamDef("op_mode", "0A0112", WriteType.OPMODE2),
-        WriteParamDef("p01_room_temp_day", "0B0005", WriteType.TEMP5, 12, 32, 0.1),
-        WriteParamDef("p02_room_temp_night", "0B0008", WriteType.TEMP5, 12, 32, 0.1),
-        WriteParamDef("p04_dhw_temp_day", "0A0013", WriteType.TEMP5, 10, 55, 0.1),
-        WriteParamDef("p05_dhw_temp_night", "0A05BF", WriteType.TEMP5, 10, 55, 0.1),
+        WriteParamDef("p01_room_temp_day", "0B0005", WriteType.TEMP5, 10, 32, 0.1),
+        WriteParamDef("p02_room_temp_night", "0B0008", WriteType.TEMP5, 10, 32, 0.1),
+        WriteParamDef("p04_dhw_temp_day", "0A0013", WriteType.TEMP5, 10, 65, 0.1),
+        WriteParamDef("p05_dhw_temp_night", "0A05BF", WriteType.TEMP5, 10, 65, 0.1),
         WriteParamDef("p07_fan_stage_day", "0A056C", WriteType.CLEAN1, 0, 3),
         WriteParamDef("p08_fan_stage_night", "0A056D", WriteType.CLEAN1, 0, 3),
         WriteParamDef("p09_fan_stage_standby", "0A056F", WriteType.CLEAN1, 0, 3),
@@ -129,8 +134,8 @@ WRITE_PARAMS: dict[str, WriteParamDef] = {
         ),
         WriteParamDef("p99_start_unsched_vent", "0A05DD", WriteType.CLEAN1, 0, 3),
         # Heating curve parameters (used by the heating-curve card).
-        WriteParamDef("p13_gradient_hc1", "0B010E", WriteType.GRADIENT6, 0.1, 5, 0.01),
-        WriteParamDef("p14_low_end_hc1", "0B059E", WriteType.TEMP5, 0, 10, 0.1),
+        WriteParamDef("p13_gradient_hc1", "0B010E", WriteType.GRADIENT6, 0, 5, 0.01),
+        WriteParamDef("p14_low_end_hc1", "0B059E", WriteType.TEMP5, 0, 20, 0.1),
         WriteParamDef("p15_room_influence_hc1", "0B010F", WriteType.CLEAN0, 0, 100, 1),
     )
 }

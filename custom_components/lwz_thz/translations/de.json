@@ -23,6 +23,13 @@
           "host": "Host",
           "tcp_port": "Port"
         }
+      },
+      "model": {
+        "title": "Gerätemodell",
+        "description": "Welches Gerät ist das? Die Serviceschnittstelle meldet eine Firmware-Version, aber kein Modell — erkennen lässt es sich also nicht. Unter diesem Namen erscheint das Gerät im Geräteregister von Home Assistant. Nicht in der Liste? Einfach eintippen.",
+        "data": {
+          "model": "Modell"
+        }
       }
     },
     "error": {
@@ -531,6 +538,7 @@
         "title": "Abfrage & Ausstattung",
         "description": "Abfrageintervalle je Registergruppe (Minimum 60 s). Die Schnittstelle wird immer strikt nacheinander bedient.",
         "data": {
+          "model": "Gerätemodell",
           "interval_status": "Intervall Status (Temperaturen, Zustände)",
           "interval_params": "Intervall Parameter (Sollwerte, Lüfterstufen)",
           "interval_history": "Intervall Historie (Betriebsstunden, Fehler)",

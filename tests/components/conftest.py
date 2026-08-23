@@ -8,6 +8,7 @@ from custom_components.lwz_thz.const import (
     CONF_PORT,
     CONNECTION_SERIAL,
     DOMAIN,
+    OPT_MODEL,
 )
 import pytest
 from pytest_homeassistant_custom_component.common import MockConfigEntry
@@ -80,4 +81,5 @@ def mock_entry() -> MockConfigEntry:
             CONF_PORT: "/dev/lwz304",
             CONF_BAUDRATE: 115200,
         },
+        options={OPT_MODEL: "LWZ 304 Trend"},
     )

@@ -6,7 +6,7 @@ from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity import EntityDescription
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .const import DOMAIN
+from .const import DEFAULT_MODEL, DOMAIN, OPT_MODEL, manufacturer_for
 from .coordinator import ThzCoordinator
 
 
@@ -28,13 +28,16 @@ class ThzEntity(CoordinatorEntity[ThzCoordinator]):
         suffix = unique_suffix or (description.key if description else None)
         if suffix is None:
             raise ValueError("either description or unique_suffix is required")
-        entry_id = coordinator.config_entry.entry_id
-        self._attr_unique_id = f"{entry_id}_{suffix}"
+        entry = coordinator.config_entry
+        self._attr_unique_id = f"{entry.entry_id}_{suffix}"
+        # The protocol has no model register, so the user names the unit in the
+        # config flow; entries created before that option existed fall back.
+        model = entry.options.get(OPT_MODEL, DEFAULT_MODEL)
         self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, entry_id)},
-            name="LWZ 304 Trend",
-            manufacturer="Stiebel Eltron / Tecalor",
-            model="LWZ/THZ integral heat pump",
+            identifiers={(DOMAIN, entry.entry_id)},
+            name=model,
+            manufacturer=manufacturer_for(model),
+            model=model,
             sw_version=coordinator.firmware,
         )
 

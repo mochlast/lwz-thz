@@ -8,6 +8,7 @@ from custom_components.lwz_thz.const import (
     CONF_PORT,
     CONNECTION_SERIAL,
     DOMAIN,
+    OPT_MODEL,
 )
 from custom_components.lwz_thz.thzprotocol.errors import (
     ThzConnectionError,
@@ -55,6 +56,15 @@ async def test_serial_flow_creates_entry(hass: HomeAssistant) -> None:
                 {CONF_PORT: "/dev/lwz304", CONF_BAUDRATE: "115200"},
             )
 
+    # Firmware 5.09 pre-selects the 304/404 family; the user may overrule it.
+    assert result["type"] is FlowResultType.FORM
+    assert result["step_id"] == "model"
+    assert result["data_schema"]({})[OPT_MODEL] == "LWZ 304 Trend"
+
+    result = await hass.config_entries.flow.async_configure(
+        result["flow_id"], {OPT_MODEL: "LWZ 404 Trend"}
+    )
+
     assert result["type"] is FlowResultType.CREATE_ENTRY
     assert result["title"] == "LWZ/THZ (5.09)"
     assert result["data"] == {
@@ -62,6 +72,7 @@ async def test_serial_flow_creates_entry(hass: HomeAssistant) -> None:
         CONF_PORT: "/dev/lwz304",
         CONF_BAUDRATE: 115200,
     }
+    assert result["options"] == {OPT_MODEL: "LWZ 404 Trend"}
 
 
 async def test_serial_flow_cannot_connect_shows_error(hass: HomeAssistant) -> None:

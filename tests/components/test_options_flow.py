@@ -9,6 +9,7 @@ from custom_components.lwz_thz.const import (
     OPT_INTERVAL_HISTORY,
     OPT_INTERVAL_PARAMS,
     OPT_INTERVAL_STATUS,
+    OPT_MODEL,
 )
 from custom_components.lwz_thz.diagnostics import async_get_config_entry_diagnostics
 from homeassistant.core import HomeAssistant
@@ -32,6 +33,7 @@ async def test_options_flow_updates_and_reloads(
     assert result["step_id"] == "init"
 
     new_options = {
+        OPT_MODEL: "THZ 404 eco",
         OPT_INTERVAL_STATUS: 120,
         OPT_INTERVAL_PARAMS: 900,
         OPT_INTERVAL_HISTORY: 7200,

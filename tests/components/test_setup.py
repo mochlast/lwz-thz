@@ -22,7 +22,7 @@ async def test_setup_creates_device_and_entities(
     device = device_registry.async_get_device({(DOMAIN, mock_entry.entry_id)})
     assert device is not None
     assert device.sw_version == "5.09"
-    assert device.manufacturer == "Stiebel Eltron / Tecalor"
+    assert device.manufacturer == "Stiebel Eltron"
 
     entity_registry = er.async_get(hass)
 

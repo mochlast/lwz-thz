@@ -34,14 +34,18 @@ from .const import (
     DEFAULT_INTERVAL_HISTORY,
     DEFAULT_INTERVAL_PARAMS,
     DEFAULT_INTERVAL_STATUS,
+    DEFAULT_MODEL,
     DEFAULT_TCP_PORT,
     DOMAIN,
+    KNOWN_MODELS,
     OPT_ENABLE_HC2,
     OPT_ENABLE_SOLAR,
     OPT_INTERVAL_ENERGY,
     OPT_INTERVAL_HISTORY,
     OPT_INTERVAL_PARAMS,
     OPT_INTERVAL_STATUS,
+    OPT_MODEL,
+    suggest_model,
 )
 from .thzprotocol import ThzClient, ThzConnectionError, ThzError
 
@@ -79,6 +83,10 @@ class LwzThzConfigFlow(ConfigFlow, domain=DOMAIN):
 
     VERSION = 1
 
+    def __init__(self) -> None:
+        self._data: dict[str, Any] = {}
+        self._firmware: str | None = None
+
     @staticmethod
     @callback
     def async_get_options_flow(config_entry) -> LwzThzOptionsFlow:
@@ -105,7 +113,8 @@ class LwzThzConfigFlow(ConfigFlow, domain=DOMAIN):
             self._abort_if_unique_id_configured()
             firmware, errors = await self._async_validate(data)
             if not errors:
-                return self.async_create_entry(title=f"LWZ/THZ ({firmware})", data=data)
+                self._data, self._firmware = data, firmware
+                return await self.async_step_model()
 
         ports = await self.hass.async_add_executor_job(_scan_serial_ports)
         schema = vol.Schema(
@@ -143,7 +152,8 @@ class LwzThzConfigFlow(ConfigFlow, domain=DOMAIN):
             self._abort_if_unique_id_configured()
             firmware, errors = await self._async_validate(data)
             if not errors:
-                return self.async_create_entry(title=f"LWZ/THZ ({firmware})", data=data)
+                self._data, self._firmware = data, firmware
+                return await self.async_step_model()
 
         schema = vol.Schema(
             {
@@ -156,6 +166,28 @@ class LwzThzConfigFlow(ConfigFlow, domain=DOMAIN):
             }
         )
         return self.async_show_form(step_id="tcp", data_schema=schema, errors=errors)
+
+    async def async_step_model(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Name the unit — the protocol reports a firmware version, not a model."""
+        if user_input is not None:
+            return self.async_create_entry(
+                title=f"LWZ/THZ ({self._firmware})",
+                data=self._data,
+                options={OPT_MODEL: user_input[OPT_MODEL]},
+            )
+
+        return self.async_show_form(
+            step_id="model",
+            data_schema=vol.Schema(
+                {
+                    vol.Required(
+                        OPT_MODEL, default=suggest_model(self._firmware)
+                    ): _model_selector()
+                }
+            ),
+        )
 
     async def _async_validate(
         self, data: dict[str, Any]
@@ -178,6 +210,17 @@ class LwzThzConfigFlow(ConfigFlow, domain=DOMAIN):
             return None, {"base": "unknown"}
         finally:
             await client.disconnect()
+
+
+def _model_selector() -> SelectSelector:
+    """Known models as suggestions; anything else can be typed in."""
+    return SelectSelector(
+        SelectSelectorConfig(
+            options=KNOWN_MODELS,
+            mode=SelectSelectorMode.DROPDOWN,
+            custom_value=True,
+        )
+    )
 
 
 def _interval_selector(maximum: int) -> NumberSelector:
@@ -204,6 +247,9 @@ class LwzThzOptionsFlow(OptionsFlow):
         options = self.config_entry.options
         schema = vol.Schema(
             {
+                vol.Required(
+                    OPT_MODEL, default=options.get(OPT_MODEL, DEFAULT_MODEL)
+                ): _model_selector(),
                 vol.Required(
                     OPT_INTERVAL_STATUS,
                     default=options.get(OPT_INTERVAL_STATUS, DEFAULT_INTERVAL_STATUS),

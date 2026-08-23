@@ -16,7 +16,11 @@ reconnect handling and per-group poll intervals.
 - **~30 binary sensors**: compressor, pumps, booster stages, valves,
   EVU release, defrost, filter-change and service indicators
 - **Write access** (verified with read-back): operating mode, room and DHW
-  setpoints, fan stages, unscheduled ventilation, heating-curve parameters
+  setpoints, fan stages, unscheduled ventilation, heating-curve parameters.
+  The allowed ranges follow the Stiebel Eltron operating manuals, not the
+  narrower FHEM constants — DHW setpoints go from 10 to 65 °C. Above roughly
+  55 °C the compressor alone no longer gets there and the electric booster
+  heater (NE) runs, which costs a lot of electricity.
 - **climate** entity (heating circuit thermostat) and **water_heater** entity
 - **12 energy/heat meters**, energy-dashboard ready
 - **Configurable poll intervals** per register group (status / parameters /
@@ -42,9 +46,13 @@ Tested on a LWZ 304 Trend (firmware 5.09). Firmware profile 4.39/5.39
 
 ### HACS (recommended)
 
-1. HACS → Custom repositories → add `https://github.com/mochlast/lwz-thz`
-   as type *Integration*
-2. Install **Stiebel Eltron LWZ / Tecalor THZ**, restart Home Assistant
+This integration is part of the HACS default list, so no custom repository
+is needed:
+
+1. HACS → search for **Stiebel Eltron LWZ / Tecalor THZ**
+2. Download it, then restart Home Assistant
+
+[![Open in HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=mochlast&repository=lwz-thz&category=integration)
 
 ### Manual
 
@@ -55,8 +63,11 @@ directory and restart.
 
 Settings → Devices & Services → Add integration → *Stiebel Eltron LWZ /
 Tecalor THZ* → pick serial port (or ser2net host) — the connection is
-verified by reading the firmware version. Poll intervals and HC2/solar
-support are configurable via the integration's *Configure* dialog.
+verified by reading the firmware version. The last step asks which unit this
+is: the service interface reports a firmware version but no model, so the
+name shown in the device registry cannot be detected. Model, poll intervals
+and HC2/solar support are all changeable later via the integration's
+*Configure* dialog.
 
 ## CLI (no Home Assistant required)
 
