@@ -42,7 +42,8 @@ def device_clock(values: Mapping[str, Any]) -> datetime | None:
 
 def clock_offset_minutes(device: datetime, now: datetime) -> float:
     """Device clock minus wall clock in minutes (positive = device ahead)."""
-    return round((device - now).total_seconds() / 60, 1)
+    # + 0.0 turns a rounded -0.0 into 0.0 (HA would show "-0.0").
+    return round((device - now).total_seconds() / 60, 1) + 0.0
 
 
 def plan_clock_sync(device: datetime, now: datetime) -> list[tuple[str, int]]:

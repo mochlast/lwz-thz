@@ -68,6 +68,12 @@ class TestDeviceClock:
         assert clock_offset_minutes(datetime(2026, 10, 22, 12, 3, 30), now) == 3.5
         assert clock_offset_minutes(datetime(2026, 10, 22, 11, 0, 0), now) == -60.0
 
+    def test_no_negative_zero(self) -> None:
+        # Seen live right after a sync: device 0.5 s behind showed "-0.0".
+        now = datetime(2026, 10, 22, 9, 38, 1, 500000)
+        offset = clock_offset_minutes(datetime(2026, 10, 22, 9, 38, 1), now)
+        assert str(offset) == "0.0"
+
 
 NOW = datetime(2026, 10, 22, 11, 1, 10)
 
