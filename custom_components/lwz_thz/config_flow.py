@@ -30,6 +30,7 @@ from .const import (
     CONNECTION_SERIAL,
     CONNECTION_TCP,
     DEFAULT_BAUDRATE,
+    DEFAULT_INTERVAL_CLOCK,
     DEFAULT_INTERVAL_ENERGY,
     DEFAULT_INTERVAL_HISTORY,
     DEFAULT_INTERVAL_PARAMS,
@@ -40,6 +41,7 @@ from .const import (
     KNOWN_MODELS,
     OPT_ENABLE_HC2,
     OPT_ENABLE_SOLAR,
+    OPT_INTERVAL_CLOCK,
     OPT_INTERVAL_ENERGY,
     OPT_INTERVAL_HISTORY,
     OPT_INTERVAL_PARAMS,
@@ -266,6 +268,10 @@ class LwzThzOptionsFlow(OptionsFlow):
                     OPT_INTERVAL_ENERGY,
                     default=options.get(OPT_INTERVAL_ENERGY, DEFAULT_INTERVAL_ENERGY),
                 ): _interval_selector(604800),
+                vol.Required(
+                    OPT_INTERVAL_CLOCK,
+                    default=options.get(OPT_INTERVAL_CLOCK, DEFAULT_INTERVAL_CLOCK),
+                ): _interval_selector(86400),
                 vol.Required(
                     OPT_ENABLE_HC2, default=options.get(OPT_ENABLE_HC2, False)
                 ): BooleanSelector(),

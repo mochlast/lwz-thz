@@ -11,6 +11,10 @@ immediately (optimistic, all three entities of a slot update at once) and
 the ~10-telegram serial write runs debounced in the background, so rapid
 UI clicks coalesce into one write. Verified read-backs are shielded
 against poll ticks that read the register before the write finished.
+
+The device clock is polled on its own interval; its offset to HA's wall
+clock is computed at read time. Syncing it is an explicit action (button)
+that writes only the clock fields that are off — never automatically.
 """
 
 from __future__ import annotations
@@ -28,8 +32,10 @@ from homeassistant.core import CALLBACK_TYPE, HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.event import async_call_later
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
+from homeassistant.util import dt as dt_util
 
 from .const import (
+    DEFAULT_INTERVAL_CLOCK,
     DEFAULT_INTERVAL_ENERGY,
     DEFAULT_INTERVAL_HISTORY,
     DEFAULT_INTERVAL_PARAMS,
@@ -37,6 +43,7 @@ from .const import (
     DOMAIN,
     OPT_ENABLE_HC2,
     OPT_ENABLE_SOLAR,
+    OPT_INTERVAL_CLOCK,
     OPT_INTERVAL_ENERGY,
     OPT_INTERVAL_HISTORY,
     OPT_INTERVAL_PARAMS,
@@ -45,6 +52,12 @@ from .const import (
     WRITE_DEBOUNCE,
 )
 from .thzprotocol import ThzClient, ThzError, ThzNotConnectedError
+from .thzprotocol.clock import (
+    clock_offset_minutes,
+    device_clock,
+    plan_clock_sync,
+    safe_write_delay,
+)
 from .thzprotocol.programs import PROGRAM_SLOTS, normalize_slot
 from .thzprotocol.registers import ENERGY
 from .thzprotocol.timing import GROUP_ERROR_BACKOFF, MIN_POLL_INTERVAL
@@ -108,13 +121,39 @@ class ProgramRead:
         return _program_data(self.slot_key, start, end)
 
 
+# Derived from sTimedate at read time (offset in minutes, + = device ahead).
+CLOCK_DEVICE_TIME = "clock.device_time"
+CLOCK_OFFSET = "clock.offset"
+
+
+def _clock_data(values: dict[str, Any]) -> dict[str, Any]:
+    """sTimedate fields plus the device time and its offset to HA's clock."""
+    data: dict[str, Any] = {f"sTimedate.{key}": value for key, value in values.items()}
+    now = dt_util.now()
+    device = device_clock(values)
+    if device is None:
+        data[CLOCK_DEVICE_TIME] = data[CLOCK_OFFSET] = None
+    else:
+        data[CLOCK_DEVICE_TIME] = device.replace(tzinfo=now.tzinfo)
+        data[CLOCK_OFFSET] = clock_offset_minutes(device, now.replace(tzinfo=None))
+    return data
+
+
+@dataclass
+class ClockRead:
+    """Read the device clock (one telegram)."""
+
+    async def execute(self, client: ThzClient) -> dict[str, Any]:
+        return _clock_data(await client.read_block("sTimedate"))
+
+
 @dataclass
 class PollGroup:
     """A set of reads sharing one poll interval."""
 
     key: str
     interval: int
-    reads: tuple[BlockRead | EnergyRead, ...]
+    reads: tuple[BlockRead | EnergyRead | ParamRead | ProgramRead | ClockRead, ...]
     next_due: float = 0.0  # monotonic; 0 = due immediately
     consecutive_errors: int = field(default=0, compare=False)
 
@@ -152,6 +191,11 @@ def build_groups(options: dict[str, Any]) -> list[PollGroup]:
             interval=interval(OPT_INTERVAL_ENERGY, DEFAULT_INTERVAL_ENERGY),
             reads=tuple(EnergyRead(key) for key in ENERGY),
         ),
+        PollGroup(
+            key="clock",
+            interval=interval(OPT_INTERVAL_CLOCK, DEFAULT_INTERVAL_CLOCK),
+            reads=(ClockRead(),),
+        ),
     ]
 
 
@@ -185,6 +229,7 @@ class ThzCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self._write_overrides: dict[str, tuple[float, Any]] = {}
         # Last enabled window per slot ("HH:MM" strings), for turn_on restore.
         self._last_windows: dict[str, tuple[str, str]] = {}
+        self._clock_lock = asyncio.Lock()
 
     async def _async_setup(self) -> None:
         try:
@@ -294,6 +339,38 @@ class ThzCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 f"writing {param_key} = {value!r} failed: {err}"
             ) from err
         self._push_write_data({f"param.{param_key}": readback})
+
+    async def async_sync_clock(self) -> None:
+        """Set the device clock to HA's wall clock, writing only what is off.
+
+        Reads the clock fresh, writes nothing below the sync threshold, waits
+        (at most ~20 s) until neither clock is near a minute rollover, then
+        writes the differing fields with read-back and re-reads the clock.
+        """
+        async with self._clock_lock:
+            try:
+                values = await self.client.read_block("sTimedate")
+                device = device_clock(values)
+                if device is None:
+                    raise HomeAssistantError(f"device clock unreadable: {values}")
+                now = dt_util.now().replace(tzinfo=None)
+                if plan_clock_sync(device, now):
+                    if delay := safe_write_delay(device, now):
+                        await asyncio.sleep(delay)
+                        device += timedelta(seconds=delay)
+                        now = dt_util.now().replace(tzinfo=None)
+                    for param_key, value in plan_clock_sync(device, now):
+                        await self.client.write_param(param_key, value)
+                    values = await self.client.read_block("sTimedate")
+            except (ThzError, ValueError) as err:
+                raise HomeAssistantError(f"clock sync failed: {err}") from err
+            data = _clock_data(values)
+            _LOGGER.info(
+                "device clock %s, offset %s min",
+                data[CLOCK_DEVICE_TIME],
+                data[CLOCK_OFFSET],
+            )
+            self._push_write_data(data)
 
     def stage_program(
         self, slot_key: str, start: dt_time | None, end: dt_time | None

@@ -34,7 +34,7 @@ from .timing import (
     SET_READBACK_DELAY,
 )
 from .transport import Transport
-from .writeparams import WRITE_PARAMS, decode_value, encode_value, values_match
+from .writeparams import ALL_PARAMS, decode_value, encode_value, values_match
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -143,7 +143,7 @@ class ThzClient:
 
     async def read_param(self, param_key: str) -> float | int | str:
         """Read the current value of a writable parameter."""
-        param = WRITE_PARAMS[param_key]
+        param = ALL_PARAMS[param_key]
         payload = await self.request(param.command)
         return decode_value(param, payload)
 
@@ -156,7 +156,7 @@ class ThzClient:
         ``ThzWriteVerifyError`` when the device reports success but the
         read-back does not match the requested value.
         """
-        param = WRITE_PARAMS[param_key]
+        param = ALL_PARAMS[param_key]
         encoded = encode_value(param, value)
         await self.request(param.command + encoded, is_set=True)
         await asyncio.sleep(SET_READBACK_DELAY)

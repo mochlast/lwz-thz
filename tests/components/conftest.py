@@ -44,7 +44,17 @@ def mock_client() -> MagicMock:
         "sLast10errors": {"number_of_faults": 0, "fault0_code": "n.a."},
         "sHC2": {"heat_set_temp": 8.0},
         "sSol": {"collector_temp": -60.0},
+        "sTimedate": {
+            "weekday": "thursday",
+            "hour": 16,
+            "minute": 43,
+            "second": 7,
+            "year": 2026,
+            "month": 10,
+            "day": 22,
+        },
     }
+    client.block_data = block_data  # tests may change the canned values
     client.read_block = AsyncMock(side_effect=lambda key: dict(block_data[key]))
     client.read_energy = AsyncMock(return_value=63355)
     param_data = {

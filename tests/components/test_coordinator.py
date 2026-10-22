@@ -13,11 +13,12 @@ from pytest_homeassistant_custom_component.common import MockConfigEntry
 class TestBuildGroups:
     def test_default_groups(self) -> None:
         groups = {group.key: group for group in build_groups({})}
-        assert set(groups) == {"status", "params", "history", "energy"}
+        assert set(groups) == {"status", "params", "history", "energy", "clock"}
         assert groups["status"].interval == 300
         assert groups["params"].interval == 600
         assert groups["history"].interval == 3600
         assert groups["energy"].interval == 3600
+        assert groups["clock"].interval == 3600
         status_blocks = [read.block_key for read in groups["status"].reads]
         assert "sGlobal" in status_blocks
         assert "sSol" not in status_blocks
@@ -50,9 +51,10 @@ class TestUpdateData:
         assert data["sHistory.compressor_heating"] == 11301
         assert data["energy.heat_hc_total"] == 63355
         assert data["param.op_mode"] == "automatic"
-        # 6 status blocks + 2 history blocks
-        assert mock_client.read_block.await_count == 8
-        assert mock_client.read_param.await_count == 16
+        # 6 status blocks + 2 history blocks + sTimedate
+        assert mock_client.read_block.await_count == 9
+        # 16 practice parameters + 11 control parameters
+        assert mock_client.read_param.await_count == 27
         assert mock_client.read_program.await_count == 9
         assert mock_client.read_energy.await_count == 12
 

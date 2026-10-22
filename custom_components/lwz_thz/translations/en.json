@@ -149,6 +149,12 @@
       "hc1_integral_heat": {
         "name": "Heating integral"
       },
+      "hc1_on_hysteresis_no": {
+        "name": "Switch-on hysteresis step"
+      },
+      "hc1_off_hysteresis_no": {
+        "name": "Switch-off hysteresis step"
+      },
       "hc1_booster_stage": {
         "name": "Booster stage heating"
       },
@@ -205,6 +211,12 @@
       },
       "last_fault": {
         "name": "Last fault"
+      },
+      "device_clock": {
+        "name": "Device clock"
+      },
+      "clock_offset": {
+        "name": "Clock offset"
       },
       "hc2_heat_set_temp": {
         "name": "Flow target temperature HC2"
@@ -356,6 +368,11 @@
         "name": "Switching program"
       }
     },
+    "button": {
+      "sync_clock": {
+        "name": "Sync clock with Home Assistant"
+      }
+    },
     "number": {
       "p01_room_temp_day": {
         "name": "Room setpoint day"
@@ -389,6 +406,39 @@
       },
       "p15_room_influence_hc1": {
         "name": "Heating curve room influence (p15)"
+      },
+      "p11_dhw_temp_manual": {
+        "name": "DHW setpoint manual mode (p11)"
+      },
+      "p19_flow_proportion_hc1": {
+        "name": "Flow proportion HC1 (p19)"
+      },
+      "p21_hyst1": {
+        "name": "Hysteresis 1 (p21)"
+      },
+      "p22_hyst2": {
+        "name": "Hysteresis 2 (p22)"
+      },
+      "p23_hyst3": {
+        "name": "Hysteresis 3 (p23)"
+      },
+      "p24_hyst4": {
+        "name": "Hysteresis 4 (p24)"
+      },
+      "p25_hyst5": {
+        "name": "Hysteresis 5 (p25)"
+      },
+      "p29_hyst_asymmetry": {
+        "name": "Hysteresis asymmetry (p29)"
+      },
+      "p30_integral_component": {
+        "name": "Integral component (p30)"
+      },
+      "p49_summer_mode_temp": {
+        "name": "Summer mode threshold (p49)"
+      },
+      "p50_summer_mode_hysteresis": {
+        "name": "Summer mode hysteresis (p50)"
       }
     },
     "select": {
@@ -543,6 +593,7 @@
           "interval_params": "Parameter interval (setpoints, fan stages)",
           "interval_history": "History interval (operating hours, faults)",
           "interval_energy": "Energy meter interval",
+          "interval_clock": "Device clock interval",
           "enable_hc2": "Heating circuit 2 installed",
           "enable_solar": "Solar system installed"
         }

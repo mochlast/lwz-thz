@@ -1,5 +1,6 @@
 """Every entity description must reference an existing register key."""
 
+from custom_components.lwz_thz.coordinator import CLOCK_DEVICE_TIME, CLOCK_OFFSET
 from custom_components.lwz_thz.descriptions import (
     BINARY_SENSORS,
     NUMBERS,
@@ -18,6 +19,7 @@ def _registry_keys() -> set[str]:
         for field in block.fields
     }
     keys.update(f"energy.{meter}" for meter in ENERGY)
+    keys.update((CLOCK_DEVICE_TIME, CLOCK_OFFSET))
     return keys
 
 
@@ -78,6 +80,7 @@ def test_translations_cover_all_entities() -> None:
         ]
         missing += [d.key for d in NUMBERS if d.key not in entity_names["number"]]
         missing += [d.key for d in SELECTS if d.key not in entity_names["select"]]
+        missing += [k for k in ("sync_clock",) if k not in entity_names["button"]]
         assert not missing, f"{language_file} missing entity names: {missing}"
 
         for description in SELECTS:
@@ -87,3 +90,30 @@ def test_translations_cover_all_entities() -> None:
                 f"{language_file} select {description.key} missing states: "
                 f"{missing_states}"
             )
+
+
+def test_compressor_start_sensors_enabled() -> None:
+    # They show how a compressor start builds up and cost no extra telegram
+    # (all from sHC1, which the status group reads anyway).
+    by_key = {d.key: d for d in SENSORS}
+    for key in ("hc1_integral_heat", "hc1_on_hysteresis_no", "hc1_off_hysteresis_no"):
+        assert by_key[key].entity_registry_enabled_default, key
+
+
+def test_control_params_disabled_by_default() -> None:
+    control = (
+        "p11_dhw_temp_manual",
+        "p19_flow_proportion_hc1",
+        "p21_hyst1",
+        "p22_hyst2",
+        "p23_hyst3",
+        "p24_hyst4",
+        "p25_hyst5",
+        "p29_hyst_asymmetry",
+        "p30_integral_component",
+        "p49_summer_mode_temp",
+        "p50_summer_mode_hysteresis",
+    )
+    by_key = {d.key: d for d in NUMBERS}
+    for key in control:
+        assert not by_key[key].entity_registry_enabled_default, key

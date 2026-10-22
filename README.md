@@ -15,14 +15,26 @@ reconnect handling and per-group poll intervals.
   thermal/electrical power, flow rate, operating hours, fault memory
 - **~30 binary sensors**: compressor, pumps, booster stages, valves,
   EVU release, defrost, filter-change and service indicators
+- **Compressor start diagnostics**: heating integral and the switch-on/off
+  hysteresis steps (sHC1) — they show how a start builds up
 - **Write access** (verified with read-back): operating mode, room and DHW
   setpoints, fan stages, unscheduled ventilation, heating-curve parameters.
   Ranges follow the Stiebel Eltron operating manuals rather than the narrower
   FHEM constants, and the unit itself has the last word — see below.
+- **Control parameters** (disabled by default, enable to read and write):
+  hysteresis 1–5 and asymmetry, integral component, flow proportion HC1,
+  summer mode threshold and hysteresis, DHW setpoint for manual mode. These
+  decide when the compressor starts; here the narrower of FHEM and manual
+  range applies
+- **Device clock**: the unit's own clock (its time programs run on it) as a
+  timestamp sensor plus its offset to Home Assistant in minutes. A button
+  syncs it on demand and writes only the fields that are off (minute ≥ 2 min
+  off, hour e.g. when summer time was not switched, date across midnight) —
+  there is no automatic sync, call the button from an automation if wanted
 - **climate** entity (heating circuit thermostat) and **water_heater** entity
 - **12 energy/heat meters**, energy-dashboard ready
 - **Configurable poll intervals** per register group (status / parameters /
-  history / energy) — the serial interface is served strictly one telegram
+  history / energy / clock) — the serial interface is served strictly one telegram
   at a time, mirroring the field-proven FHEM timing
 - Config flow with connection test, options flow, diagnostics, en/de
   translations
@@ -101,6 +113,8 @@ uv run scripts/thz_cli.py --port /dev/ttyUSB1 get all --dump
 uv run scripts/thz_cli.py --port /dev/ttyUSB1 energy all
 uv run scripts/thz_cli.py --port /dev/ttyUSB1 params
 uv run scripts/thz_cli.py --port /dev/ttyUSB1 set p07_fan_stage_day 2
+uv run scripts/thz_cli.py --port /dev/ttyUSB1 get sTimedate
+uv run scripts/thz_cli.py --port /dev/ttyUSB1 set clock_minute 27
 uv run scripts/thz_cli.py --port /dev/ttyUSB1 monitor --interval 60
 ```
 

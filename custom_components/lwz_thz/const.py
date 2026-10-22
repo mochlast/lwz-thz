@@ -21,6 +21,7 @@ OPT_INTERVAL_STATUS = "interval_status"
 OPT_INTERVAL_PARAMS = "interval_params"
 OPT_INTERVAL_HISTORY = "interval_history"
 OPT_INTERVAL_ENERGY = "interval_energy"
+OPT_INTERVAL_CLOCK = "interval_clock"
 OPT_ENABLE_HC2 = "enable_hc2"
 OPT_ENABLE_SOLAR = "enable_solar"
 
@@ -30,6 +31,8 @@ DEFAULT_INTERVAL_HISTORY = 3600
 # Hourly so the energy dashboard gets a proper per-hour breakdown
 # (24 meter telegrams/h — negligible next to the status polling).
 DEFAULT_INTERVAL_ENERGY = 3600
+# The device clock drifts minutes per month, not per hour.
+DEFAULT_INTERVAL_CLOCK = 3600
 
 # The coordinator ticks at this rate and only polls groups that are due.
 TICK_INTERVAL = 30
