@@ -246,7 +246,19 @@ SENSORS: tuple[ThzSensorDescription, ...] = (
     _temp("hc1_inside_temp_rc", "sHC1.inside_temp_rc"),
     _enum("hc1_season_mode", "sHC1.season_mode", SEASON_OPTIONS),
     _enum("hc1_op_mode", "sHC1.hc_op_mode", HC_OP_MODE_OPTIONS),
-    _diag("hc1_integral_heat", "sHC1.integral_heat"),
+    # How a compressor start builds up: the integral runs towards minus or
+    # plus p30 (= sHC1.integral_switch, so no entity of its own) and resets
+    # when a stage switches; the hysteresis steps flip at start and stop.
+    ThzSensorDescription(
+        key="hc1_integral_heat",
+        translation_key="hc1_integral_heat",
+        value_key="sHC1.integral_heat",
+        native_unit_of_measurement="K·min",
+        state_class=SensorStateClass.MEASUREMENT,
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+    _diag("hc1_on_hysteresis_no", "sHC1.on_hysteresis_no", enabled=True),
+    _diag("hc1_off_hysteresis_no", "sHC1.off_hysteresis_no", enabled=True),
     _diag("hc1_booster_stage", "sHC1.hc_booster_stage"),
     # sDHW
     _temp("dhw_set_temp", "sDHW.dhw_set_temp"),
@@ -529,6 +541,35 @@ def _curve_param(key: str, *, unit: str | None = None) -> ThzNumberDescription:
     )
 
 
+def _control_param(
+    key: str,
+    *,
+    unit: str | None = None,
+    device_class: NumberDeviceClass | None = None,
+) -> ThzNumberDescription:
+    """Control parameter: polled, but disabled until someone opts in to write."""
+    param = WRITE_PARAMS[key]
+    return ThzNumberDescription(
+        key=key,
+        translation_key=key,
+        param_key=key,
+        value_key=f"param.{key}",
+        device_class=device_class,
+        native_unit_of_measurement=unit,
+        native_min_value=param.min,
+        native_max_value=param.max,
+        native_step=param.step,
+        mode=NumberMode.BOX,
+        entity_category=EntityCategory.CONFIG,
+        entity_registry_enabled_default=False,
+    )
+
+
+_CELSIUS = {
+    "unit": UnitOfTemperature.CELSIUS,
+    "device_class": NumberDeviceClass.TEMPERATURE,
+}
+
 NUMBERS: tuple[ThzNumberDescription, ...] = (
     _setpoint("p01_room_temp_day"),
     _setpoint("p02_room_temp_night"),
@@ -542,6 +583,18 @@ NUMBERS: tuple[ThzNumberDescription, ...] = (
     _curve_param("p13_gradient_hc1"),
     _curve_param("p14_low_end_hc1", unit="K"),
     _curve_param("p15_room_influence_hc1", unit=PERCENTAGE),
+    # Control parameters (disabled by default)
+    _control_param("p11_dhw_temp_manual", **_CELSIUS),
+    _control_param("p19_flow_proportion_hc1", unit=PERCENTAGE),
+    _control_param("p21_hyst1", unit="K"),
+    _control_param("p22_hyst2", unit="K"),
+    _control_param("p23_hyst3", unit="K"),
+    _control_param("p24_hyst4", unit="K"),
+    _control_param("p25_hyst5", unit="K"),
+    _control_param("p29_hyst_asymmetry"),
+    _control_param("p30_integral_component", unit="K·min"),
+    _control_param("p49_summer_mode_temp", **_CELSIUS),
+    _control_param("p50_summer_mode_hysteresis", unit="K"),
 )
 
 SELECTS: tuple[ThzSelectDescription, ...] = (

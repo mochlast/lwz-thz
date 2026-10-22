@@ -137,6 +137,36 @@ WRITE_PARAMS: dict[str, WriteParamDef] = {
         WriteParamDef("p13_gradient_hc1", "0B010E", WriteType.GRADIENT6, 0, 5, 0.01),
         WriteParamDef("p14_low_end_hc1", "0B059E", WriteType.TEMP5, 0, 20, 0.1),
         WriteParamDef("p15_room_influence_hc1", "0B010F", WriteType.CLEAN0, 0, 100, 1),
+        # Control parameters: when the compressor starts and stops. Unlike
+        # the setpoints above, FHEM and the manual (Bedienung LWZ 304 Integral/
+        # Trend, 404 Trend, A 312030-38606-9039, "Menüstruktur") are both
+        # consulted and the narrower range wins — these are not everyday
+        # settings, and the firmware may refuse values its display offers.
+        # Manual 10..65 °C, FHEM 10..55 °C like its other DHW setpoints.
+        WriteParamDef("p11_dhw_temp_manual", "0A0580", WriteType.TEMP5, 10, 55, 0.1),
+        # Weight of the flow (vs. return) temperature in the heating-circuit
+        # actual value the hysteresis and integral work on. Both 0..100 %.
+        WriteParamDef("p19_flow_proportion_hc1", "0B059D", WriteType.CLEAN1, 0, 100),
+        # Below setpoint - Hyst1 the next stage switches on (stage 1 is the
+        # compressor, then the boosters), - Hyst1 - Hyst2 one more. Manual
+        # and FHEM agree: 0..10 K for 1..2, 0..5 K for 3..5.
+        WriteParamDef("p21_hyst1", "0A05C0", WriteType.TEMP5, 0, 10, 0.1),
+        WriteParamDef("p22_hyst2", "0A05C1", WriteType.TEMP5, 0, 10, 0.1),
+        WriteParamDef("p23_hyst3", "0A05C2", WriteType.TEMP5, 0, 5, 0.1),
+        WriteParamDef("p24_hyst4", "0A05C3", WriteType.TEMP5, 0, 5, 0.1),
+        WriteParamDef("p25_hyst5", "0A05C4", WriteType.TEMP5, 0, 5, 0.1),
+        # Divides the hysteresis above the setpoint (switch-off side). 1..5.
+        WriteParamDef("p29_hyst_asymmetry", "0A05C5", WriteType.CLEAN1, 1, 5),
+        # Threshold of the heating integral in K·min: when sHC1.integral_heat
+        # reaches it, one stage switches up or down and the integral resets.
+        # sHC1.integral_switch mirrors it. Manual 1..999, FHEM 10..999.
+        WriteParamDef("p30_integral_component", "0A0162", WriteType.CLEAN1, 10, 999),
+        # Manual 10..25 °C, FHEM 10..24 °C.
+        WriteParamDef("p49_summer_mode_temp", "0A0116", WriteType.TEMP5, 10, 24, 0.1),
+        # Manual 1..7 K; FHEM 0.5..5 K (set table) and 1..5 K (pHeat2).
+        WriteParamDef(
+            "p50_summer_mode_hysteresis", "0A05A2", WriteType.TEMP5, 1, 5, 0.1
+        ),
     )
 }
 

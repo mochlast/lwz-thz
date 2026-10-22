@@ -15,10 +15,17 @@ reconnect handling and per-group poll intervals.
   thermal/electrical power, flow rate, operating hours, fault memory
 - **~30 binary sensors**: compressor, pumps, booster stages, valves,
   EVU release, defrost, filter-change and service indicators
+- **Compressor start diagnostics**: heating integral and the switch-on/off
+  hysteresis steps (sHC1) — they show how a start builds up
 - **Write access** (verified with read-back): operating mode, room and DHW
   setpoints, fan stages, unscheduled ventilation, heating-curve parameters.
   Ranges follow the Stiebel Eltron operating manuals rather than the narrower
   FHEM constants, and the unit itself has the last word — see below.
+- **Control parameters** (disabled by default, enable to read and write):
+  hysteresis 1–5 and asymmetry, integral component, flow proportion HC1,
+  summer mode threshold and hysteresis, DHW setpoint for manual mode. These
+  decide when the compressor starts; here the narrower of FHEM and manual
+  range applies
 - **Device clock**: the unit's own clock (its time programs run on it) as a
   timestamp sensor plus its offset to Home Assistant in minutes. A button
   syncs it on demand and writes only the fields that are off (minute ≥ 2 min

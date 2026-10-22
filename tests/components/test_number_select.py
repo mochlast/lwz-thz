@@ -5,6 +5,7 @@ from unittest.mock import patch
 
 from custom_components.lwz_thz.const import DOMAIN
 from custom_components.lwz_thz.thzprotocol.errors import ThzWriteVerifyError
+from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import entity_registry as er
 from homeassistant.util import dt as dt_util
@@ -12,7 +13,8 @@ from pytest_homeassistant_custom_component.common import async_fire_time_changed
 
 
 async def _setup(hass: HomeAssistant, mock_entry, mock_client) -> None:
-    mock_entry.add_to_hass(hass)
+    if mock_entry.entry_id not in hass.config_entries.async_entry_ids():
+        mock_entry.add_to_hass(hass)
     with patch("custom_components.lwz_thz.ThzClient", return_value=mock_client):
         assert await hass.config_entries.async_setup(mock_entry.entry_id)
         await hass.async_block_till_done()
@@ -85,6 +87,45 @@ class TestNumber:
         await _flush_debounce(hass)
         # Write failed -> revert to the last verified device value.
         assert hass.states.get(entity_id).state == "25.0"
+
+
+class TestControlParams:
+    async def test_disabled_by_default(
+        self, hass: HomeAssistant, mock_entry, mock_client
+    ) -> None:
+        await _setup(hass, mock_entry, mock_client)
+        registry = er.async_get(hass)
+        entity_id = _entity_id(
+            hass, "number", mock_entry.entry_id, "p30_integral_component"
+        )
+        entry = registry.async_get(entity_id)
+        assert entry.disabled_by is er.RegistryEntryDisabler.INTEGRATION
+        assert entry.entity_category is EntityCategory.CONFIG
+        assert hass.states.get(entity_id) is None
+        # Polled all the same, so enabling the entity shows a value at once.
+        mock_client.read_param.assert_any_await("p30_integral_component")
+
+    async def test_enabled_entity_reads_and_writes(
+        self, hass: HomeAssistant, mock_entry, mock_client
+    ) -> None:
+        mock_entry.add_to_hass(hass)
+        er.async_get(hass).async_get_or_create(
+            "number",
+            DOMAIN,
+            f"{mock_entry.entry_id}_p21_hyst1",
+            config_entry=mock_entry,
+        )
+        await _setup(hass, mock_entry, mock_client)
+        entity_id = _entity_id(hass, "number", mock_entry.entry_id, "p21_hyst1")
+        state = hass.states.get(entity_id)
+        assert state.attributes["min"] == 0
+        assert state.attributes["max"] == 10
+        assert state.attributes["unit_of_measurement"] == "K"
+
+        await _set_number(hass, entity_id, 4.5)
+        await _flush_debounce(hass)
+        mock_client.write_param.assert_awaited_once_with("p21_hyst1", 4.5)
+        assert hass.states.get(entity_id).state == "4.5"
 
 
 class TestSelect:

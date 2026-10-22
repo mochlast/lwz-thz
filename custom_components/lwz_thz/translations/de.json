@@ -149,6 +149,12 @@
       "hc1_integral_heat": {
         "name": "Heizintegral"
       },
+      "hc1_on_hysteresis_no": {
+        "name": "Hysterese-Stufe Einschalten"
+      },
+      "hc1_off_hysteresis_no": {
+        "name": "Hysterese-Stufe Ausschalten"
+      },
       "hc1_booster_stage": {
         "name": "Booster-Stufe Heizung"
       },
@@ -400,6 +406,39 @@
       },
       "p15_room_influence_hc1": {
         "name": "Heizkurve Raumeinfluss (p15)"
+      },
+      "p11_dhw_temp_manual": {
+        "name": "Warmwasser-Soll Handbetrieb (p11)"
+      },
+      "p19_flow_proportion_hc1": {
+        "name": "Anteil Vorlauf HK1 (p19)"
+      },
+      "p21_hyst1": {
+        "name": "Hysterese 1 (p21)"
+      },
+      "p22_hyst2": {
+        "name": "Hysterese 2 (p22)"
+      },
+      "p23_hyst3": {
+        "name": "Hysterese 3 (p23)"
+      },
+      "p24_hyst4": {
+        "name": "Hysterese 4 (p24)"
+      },
+      "p25_hyst5": {
+        "name": "Hysterese 5 (p25)"
+      },
+      "p29_hyst_asymmetry": {
+        "name": "Asymmetrie der Hysterese (p29)"
+      },
+      "p30_integral_component": {
+        "name": "Integralanteil (p30)"
+      },
+      "p49_summer_mode_temp": {
+        "name": "Sommerbetrieb Grenze (p49)"
+      },
+      "p50_summer_mode_hysteresis": {
+        "name": "Sommerbetrieb Hysterese (p50)"
       }
     },
     "select": {
