@@ -139,3 +139,22 @@ WRITE_PARAMS: dict[str, WriteParamDef] = {
         WriteParamDef("p15_room_influence_hc1", "0B010F", WriteType.CLEAN0, 0, 100, 1),
     )
 }
+
+# Device clock (FHEM pClockDay/Month/Year/Hour/Minutes). Not part of the
+# polled practice set: the clock is read in one telegram via sTimedate (FC)
+# and these registers are only written by the clock sync, field by field.
+# FHEM caps the two-digit year at 20, a leftover from when the module was
+# written; the register is a plain byte, so any 20xx year fits.
+CLOCK_PARAMS: dict[str, WriteParamDef] = {
+    param.key: param
+    for param in (
+        WriteParamDef("clock_day", "0A0122", WriteType.CLEAN0, 1, 31),
+        WriteParamDef("clock_month", "0A0123", WriteType.CLEAN0, 1, 12),
+        WriteParamDef("clock_year", "0A0124", WriteType.CLEAN0, 12, 99),
+        WriteParamDef("clock_hour", "0A0125", WriteType.CLEAN0, 0, 23),
+        WriteParamDef("clock_minute", "0A0126", WriteType.CLEAN0, 0, 59),
+    )
+}
+
+# Everything the client can read and write by key.
+ALL_PARAMS: dict[str, WriteParamDef] = WRITE_PARAMS | CLOCK_PARAMS

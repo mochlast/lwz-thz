@@ -21,7 +21,7 @@ from .client import ThzClient
 from .errors import ThzError
 from .registers import BLOCKS, ENERGY
 from .transport import SerialTransport, TcpTransport, Transport
-from .writeparams import WRITE_PARAMS
+from .writeparams import ALL_PARAMS
 
 
 def _build_parser() -> argparse.ArgumentParser:
@@ -53,7 +53,7 @@ def _build_parser() -> argparse.ArgumentParser:
     sub.add_parser("params", help="read all writable parameters")
 
     set_cmd = sub.add_parser("set", help="write a parameter (with read-back verify)")
-    set_cmd.add_argument("param", help=f"one of: {', '.join(WRITE_PARAMS)}")
+    set_cmd.add_argument("param", help=f"one of: {', '.join(ALL_PARAMS)}")
     set_cmd.add_argument("value", help="new value (number, or mode name for op_mode)")
 
     monitor = sub.add_parser(
@@ -146,7 +146,7 @@ async def _cmd_energy(client: ThzClient, args: argparse.Namespace) -> int:
 
 async def _cmd_params(client: ThzClient, args: argparse.Namespace) -> int:
     result: dict[str, object] = {}
-    for key, param in WRITE_PARAMS.items():
+    for key, param in ALL_PARAMS.items():
         value = await client.read_param(key)
         result[key] = value
         if not args.json:
@@ -157,9 +157,9 @@ async def _cmd_params(client: ThzClient, args: argparse.Namespace) -> int:
 
 
 async def _cmd_set(client: ThzClient, args: argparse.Namespace) -> int:
-    if args.param not in WRITE_PARAMS:
+    if args.param not in ALL_PARAMS:
         print(
-            f"unknown parameter '{args.param}', available: {', '.join(WRITE_PARAMS)}",
+            f"unknown parameter '{args.param}', available: {', '.join(ALL_PARAMS)}",
             file=sys.stderr,
         )
         return 2

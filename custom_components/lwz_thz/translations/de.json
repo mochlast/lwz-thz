@@ -206,6 +206,12 @@
       "last_fault": {
         "name": "Letzter Fehler"
       },
+      "device_clock": {
+        "name": "Geräteuhr"
+      },
+      "clock_offset": {
+        "name": "Uhr-Abweichung"
+      },
       "hc2_heat_set_temp": {
         "name": "Vorlauf-Solltemperatur HK2"
       },
@@ -354,6 +360,11 @@
       },
       "display_switching_prog": {
         "name": "Schaltprogramm"
+      }
+    },
+    "button": {
+      "sync_clock": {
+        "name": "Uhr mit HA synchronisieren"
       }
     },
     "number": {
@@ -543,6 +554,7 @@
           "interval_params": "Intervall Parameter (Sollwerte, Lüfterstufen)",
           "interval_history": "Intervall Historie (Betriebsstunden, Fehler)",
           "interval_energy": "Intervall Energiezähler",
+          "interval_clock": "Intervall Geräteuhr",
           "enable_hc2": "Heizkreis 2 vorhanden",
           "enable_solar": "Solaranlage vorhanden"
         }

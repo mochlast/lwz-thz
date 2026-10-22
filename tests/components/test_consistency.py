@@ -1,5 +1,6 @@
 """Every entity description must reference an existing register key."""
 
+from custom_components.lwz_thz.coordinator import CLOCK_DEVICE_TIME, CLOCK_OFFSET
 from custom_components.lwz_thz.descriptions import (
     BINARY_SENSORS,
     NUMBERS,
@@ -18,6 +19,7 @@ def _registry_keys() -> set[str]:
         for field in block.fields
     }
     keys.update(f"energy.{meter}" for meter in ENERGY)
+    keys.update((CLOCK_DEVICE_TIME, CLOCK_OFFSET))
     return keys
 
 
@@ -78,6 +80,7 @@ def test_translations_cover_all_entities() -> None:
         ]
         missing += [d.key for d in NUMBERS if d.key not in entity_names["number"]]
         missing += [d.key for d in SELECTS if d.key not in entity_names["select"]]
+        missing += [k for k in ("sync_clock",) if k not in entity_names["button"]]
         assert not missing, f"{language_file} missing entity names: {missing}"
 
         for description in SELECTS:

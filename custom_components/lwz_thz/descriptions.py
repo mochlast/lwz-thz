@@ -1,8 +1,8 @@
 """Entity descriptions — HA presentation only, protocol facts live in thzprotocol.
 
 Each description references a coordinator data key (``value_key``, format
-``<block>.<field>`` or ``energy.<meter>``). A consistency test asserts that
-every referenced key exists in the register tables.
+``<block>.<field>``, ``energy.<meter>`` or a derived ``clock.*`` key). A
+consistency test asserts that every referenced key exists.
 """
 
 from __future__ import annotations
@@ -283,6 +283,23 @@ SENSORS: tuple[ThzSensorDescription, ...] = (
     # sLast10errors
     _diag("number_of_faults", "sLast10errors.number_of_faults", enabled=True),
     _diag("last_fault", "sLast10errors.fault0_code", enabled=True),
+    # sTimedate — device clock (the time programs run on it)
+    ThzSensorDescription(
+        key="device_clock",
+        translation_key="device_clock",
+        value_key="clock.device_time",
+        device_class=SensorDeviceClass.TIMESTAMP,
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+    ThzSensorDescription(
+        key="clock_offset",
+        translation_key="clock_offset",
+        value_key="clock.offset",
+        native_unit_of_measurement=UnitOfTime.MINUTES,
+        state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=1,
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
     # sHC2 (feature-gated; flow temp comes from sGlobal.flow_temp_hc2)
     _temp("hc2_heat_set_temp", "sHC2.heat_set_temp", feature=FEATURE_HC2),
     _enum("hc2_op_mode", "sHC2.hc_op_mode", HC_OP_MODE_OPTIONS, feature=FEATURE_HC2),

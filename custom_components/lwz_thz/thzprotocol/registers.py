@@ -299,7 +299,9 @@ SLAST10ERRORS = BlockDef(
     ),
 )
 
-# FHEM "FCtime" — device clock.
+# FHEM "FCtime" — device clock. Firmware 5.09 uses this base layout (FHEM
+# profiles 4.39/5.39); "FCtime206" with every field two nibbles further on
+# belongs to the 2.06/2.14 firmwares only. Year is two digits (+2000).
 STIMEDATE = BlockDef(
     key="sTimedate",
     command="FC",

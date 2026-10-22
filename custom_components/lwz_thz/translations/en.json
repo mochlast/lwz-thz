@@ -206,6 +206,12 @@
       "last_fault": {
         "name": "Last fault"
       },
+      "device_clock": {
+        "name": "Device clock"
+      },
+      "clock_offset": {
+        "name": "Clock offset"
+      },
       "hc2_heat_set_temp": {
         "name": "Flow target temperature HC2"
       },
@@ -354,6 +360,11 @@
       },
       "display_switching_prog": {
         "name": "Switching program"
+      }
+    },
+    "button": {
+      "sync_clock": {
+        "name": "Sync clock with Home Assistant"
       }
     },
     "number": {
@@ -543,6 +554,7 @@
           "interval_params": "Parameter interval (setpoints, fan stages)",
           "interval_history": "History interval (operating hours, faults)",
           "interval_energy": "Energy meter interval",
+          "interval_clock": "Device clock interval",
           "enable_hc2": "Heating circuit 2 installed",
           "enable_solar": "Solar system installed"
         }

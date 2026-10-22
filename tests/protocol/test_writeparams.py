@@ -6,6 +6,8 @@ from thzprotocol import client as client_module, framing
 from thzprotocol.client import ThzClient
 from thzprotocol.errors import ThzWriteVerifyError
 from thzprotocol.writeparams import (
+    ALL_PARAMS,
+    CLOCK_PARAMS,
     WRITE_PARAMS,
     decode_value,
     encode_value,
@@ -59,6 +61,40 @@ class TestEncodeValue:
     def test_room_influence_clean0(self) -> None:
         assert encode_value(WRITE_PARAMS["p15_room_influence_hc1"], 80) == "50"
 
+    def test_clock_registers_match_fhem(self) -> None:
+        commands = {key: param.command for key, param in CLOCK_PARAMS.items()}
+        assert commands == {
+            "clock_day": "0A0122",
+            "clock_month": "0A0123",
+            "clock_year": "0A0124",
+            "clock_hour": "0A0125",
+            "clock_minute": "0A0126",
+        }
+
+    def test_clock_year_beyond_fhem_cap(self) -> None:
+        # FHEM's argMax 20 is stale; 2026 must be writable.
+        param = CLOCK_PARAMS["clock_year"]
+        assert encode_value(param, 26) == "1A"
+        assert encode_value(param, 99) == "63"
+        with pytest.raises(ValueError):
+            encode_value(param, 100)
+
+    def test_clock_ranges(self) -> None:
+        assert encode_value(CLOCK_PARAMS["clock_hour"], 23) == "17"
+        assert encode_value(CLOCK_PARAMS["clock_minute"], 0) == "00"
+        with pytest.raises(ValueError):
+            encode_value(CLOCK_PARAMS["clock_hour"], 24)
+        with pytest.raises(ValueError):
+            encode_value(CLOCK_PARAMS["clock_minute"], 60)
+        with pytest.raises(ValueError):
+            encode_value(CLOCK_PARAMS["clock_day"], 0)
+
+    def test_clock_params_are_not_polled(self) -> None:
+        # The clock is read as one sTimedate block; the registers are
+        # write-only for the sync and must not join the params poll group.
+        assert not set(CLOCK_PARAMS) & set(WRITE_PARAMS)
+        assert ALL_PARAMS == WRITE_PARAMS | CLOCK_PARAMS
+
 
 class TestDecodeValue:
     def test_temp5(self) -> None:
@@ -72,6 +108,10 @@ class TestDecodeValue:
     def test_clean1(self) -> None:
         payload = bytes.fromhex("AB" + "0A056C" + "0002")
         assert decode_value(WRITE_PARAMS["p07_fan_stage_day"], payload) == 2
+
+    def test_clock_minute(self) -> None:
+        payload = bytes.fromhex("AB" + "0A0126" + "1B")
+        assert decode_value(CLOCK_PARAMS["clock_minute"], payload) == 27
 
 
 class TestValuesMatch:
@@ -142,6 +182,26 @@ class TestWriteParam:
 
         with pytest.raises(ThzWriteVerifyError):
             await client.write_param("p07_fan_stage_day", 2)
+
+    async def test_write_clock_minute(self) -> None:
+        # FHEM's monthly "set pClockMinutes 27", through the same verify path.
+        transport = FakeTransport(
+            [
+                *(b"\x10", b"\x10\x02", _SET_OK),
+                *(
+                    b"\x10",
+                    b"\x10\x02",
+                    _get_response(bytes.fromhex("0A0126"), b"\x1b"),
+                ),
+            ]
+        )
+        client = ThzClient(lambda: transport)
+        await client.connect()
+
+        assert await client.write_param("clock_minute", 27) == 27
+        assert transport.writes[1] == framing.encode_frame(
+            bytes.fromhex("0A01261B"), is_set=True
+        )
 
     async def test_out_of_range_sends_nothing(self) -> None:
         transport = FakeTransport()
