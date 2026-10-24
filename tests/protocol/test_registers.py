@@ -11,9 +11,11 @@ from thzprotocol.registers import (
     SDISPLAY,
     SFIRMWARE,
     SGLOBAL,
+    SGLOBAL_7X,
     SHC1,
     SLAST10ERRORS,
     STIMEDATE,
+    blocks_for,
     parse_block,
     parse_energy_register,
 )
@@ -85,6 +87,41 @@ class TestSGlobal:
         assert values["outside_temp"] == 22.7
         assert "humidity_air_out" not in values
         assert "actual_power_pel" not in values
+
+
+class TestSGlobal7x:
+    def _payload(self) -> bytes:
+        return _build_payload(
+            158,
+            {
+                2: "FB",
+                8: "007B",  # outside_temp 12.3
+                94: "4561B49A",  # actual_power_qc 3611.288 W
+                102: "44B9184A",  # actual_power_pel 1480.759 W on 7.x
+            },
+        )
+
+    def test_pel_in_watts_is_normalized_to_kw(self) -> None:
+        values = parse_block(SGLOBAL_7X, self._payload())
+        assert values["actual_power_pel"] == 1.480759
+        assert values["actual_power_qc"] == 3.611288
+
+    def test_only_pel_differs_from_the_5x_table(self) -> None:
+        base = parse_block(SGLOBAL, self._payload())
+        fw7 = parse_block(SGLOBAL_7X, self._payload())
+        assert base["actual_power_pel"] == 1480.759  # what 0.9.0 showed as kW
+        assert {k: v for k, v in fw7.items() if base[k] != v} == {
+            "actual_power_pel": 1.480759
+        }
+
+    def test_blocks_for_firmware(self) -> None:
+        assert blocks_for("5.09") is BLOCKS
+        assert blocks_for("4.39") is BLOCKS
+        assert blocks_for(None) is BLOCKS
+        assert blocks_for("7.02")["sGlobal"] is SGLOBAL_7X
+        assert {k for k in BLOCKS if blocks_for("7.02")[k] is not BLOCKS[k]} == {
+            "sGlobal"
+        }
 
 
 class TestSFirmware:

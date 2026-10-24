@@ -26,7 +26,13 @@ from .errors import (
 )
 from .programs import PROGRAM_SLOTS, decode_slot, encode_slot, normalize_slot
 from .protocol import ThzProtocol
-from .registers import BLOCKS, ENERGY, parse_block, parse_energy_register
+from .registers import (
+    BLOCKS,
+    ENERGY,
+    blocks_for,
+    parse_block,
+    parse_energy_register,
+)
 from .timing import (
     ERROR_SETTLE,
     INTER_REQUEST_GAP,
@@ -50,6 +56,8 @@ class ThzClient:
         self._last_request_end = 0.0
         self._fail_streak = 0
         self._backoff_until = 0.0
+        # Until get_firmware() has run, parse with the 4.39/5.39 tables.
+        self._blocks = BLOCKS
 
     @property
     def is_connected(self) -> bool:
@@ -117,7 +125,7 @@ class ThzClient:
                 await asyncio.sleep(gap)
             assert self._protocol is not None
             try:
-                return await self._protocol.request(command, is_set=is_set)
+                payload = await self._protocol.request(command, is_set=is_set)
             except ThzConnectionError:
                 await self._teardown_locked()
                 self._register_failure()
@@ -127,10 +135,13 @@ class ThzClient:
                 raise
             finally:
                 self._last_request_end = time.monotonic()
+        # Raw telegrams for firmware the register tables do not cover yet.
+        _LOGGER.debug("%s -> %s", command.hex().upper(), payload.hex(" "))
+        return payload
 
     async def read_block(self, block_key: str) -> dict[str, Any]:
         """Read and parse one register block, e.g. ``sGlobal``."""
-        block = BLOCKS[block_key]
+        block = self._blocks[block_key]
         payload = await self.request(block.command)
         return parse_block(block, payload)
 
@@ -195,6 +206,8 @@ class ThzClient:
         return readback
 
     async def get_firmware(self) -> str:
-        """Read the firmware version, e.g. ``5.39``."""
+        """Read the firmware version, e.g. ``5.39``, and pick its block tables."""
         values = await self.read_block("sFirmware")
-        return values["firmware_version"].lstrip("0")
+        firmware = values["firmware_version"].lstrip("0")
+        self._blocks = blocks_for(firmware)
+        return firmware
