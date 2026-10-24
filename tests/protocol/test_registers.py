@@ -8,6 +8,7 @@ from thzprotocol.registers import (
     BLOCKS,
     ENERGY,
     SDHW,
+    SDISPLAY,
     SFIRMWARE,
     SGLOBAL,
     SHC1,
@@ -177,6 +178,23 @@ class TestSTimedate:
             "month": 7,
             "day": 4,
         }
+
+
+class TestSDisplay:
+    def test_parses_compressor_bit(self) -> None:
+        # Payload: chk + 3-byte echo + 4 status nibbles from nibble 8.
+        payload = bytes.fromhex("AB" + "0A0176" + "0006")  # heating_hc + compressor
+        values = parse_block(SDISPLAY, payload)
+        assert values["compressor"] is True
+        assert values["heating_hc"] is True
+        assert values["switching_prog"] is False
+        assert values["cooling"] is False
+
+    def test_compressor_off(self) -> None:
+        payload = bytes.fromhex("AB" + "0A0176" + "0001")  # switching_prog only
+        values = parse_block(SDISPLAY, payload)
+        assert values["compressor"] is False
+        assert values["switching_prog"] is True
 
 
 class TestEnergy:

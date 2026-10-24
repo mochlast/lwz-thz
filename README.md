@@ -50,7 +50,9 @@ reconnect handling and per-group poll intervals.
 - **Exclusive port access**: stop FHEM or any other reader first
 
 Tested on a LWZ 304 Trend (firmware 5.09). Firmware profile 4.39/5.39
-(LWZ/THZ 30x/40x); the 2.x firmware family is not supported.
+(LWZ/THZ 30x/40x); the 2.x firmware family is not supported. On firmware
+7.x (e.g. Tecalor THZ 5.5 eco) the compressor sensor reads the front-display
+bit, because the sGlobal bit stays set there while the compressor is off.
 
 ## Installation
 
