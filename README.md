@@ -50,7 +50,10 @@ reconnect handling and per-group poll intervals.
 - **Exclusive port access**: stop FHEM or any other reader first
 
 Tested on a LWZ 304 Trend (firmware 5.09). Firmware profile 4.39/5.39
-(LWZ/THZ 30x/40x); the 2.x firmware family is not supported.
+(LWZ/THZ 30x/40x); the 2.x firmware family is not supported. On firmware
+7.x (e.g. Tecalor THZ 5.5 eco) the compressor sensor reads the front-display
+bit, because the sGlobal bit stays set there while the compressor is off, and
+the electrical power (Pel) comes in W instead of kW and is converted.
 
 ## Installation
 
@@ -100,6 +103,16 @@ A refused value is never silently lost. Every write is read back, so:
 Also worth knowing: above roughly 55 °C the compressor alone no longer reaches
 the target, and the electric booster (NE) runs — which costs a lot of
 electricity.
+
+## Raw telegrams for other firmware
+
+To help support a firmware that is not tested yet, capture the raw telegrams
+inside Home Assistant (no serial port juggling, works on Home Assistant OS):
+
+1. *Settings → Devices & services → LWZ/THZ → ⋮ → Enable debug logging*
+2. Wait for one status poll (every 5 minutes by default).
+3. *⋮ → Disable debug logging*: the browser downloads the log. Lines like
+   `FB -> 8f fb fd a8 …` are the raw answers per command.
 
 ## CLI (no Home Assistant required)
 

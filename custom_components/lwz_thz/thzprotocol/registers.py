@@ -16,7 +16,7 @@ one namespace (e.g. the HA coordinator) qualify them as ``<block>.<field>``.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Any
 
 from .datatypes import FieldType, convert
@@ -156,6 +156,17 @@ SGLOBAL = BlockDef(
         FieldDef("flow_rate", 110, 4, FieldType.HEX, divisor=100),
         FieldDef("pressure_hc_water", 114, 4, FieldType.HEX, divisor=100),  # p_HCw
         FieldDef("humidity_air_out", 154, 4, FieldType.HEX, divisor=100),
+    ),
+)
+
+# Firmware 7.x (Tecalor THZ 5.5 eco, issue #3) reports Pel in W like Qc
+# (during a DHW run: Qc 3611.3, Pel 1480.8). FHEM has no 7.x profile; this
+# is the only layout difference known so far. Normalize Pel to kW as well.
+SGLOBAL_7X = replace(
+    SGLOBAL,
+    fields=tuple(
+        replace(field, divisor=1000) if field.key == "actual_power_pel" else field
+        for field in SGLOBAL.fields
     ),
 )
 
@@ -373,6 +384,14 @@ BLOCKS: dict[str, BlockDef] = {
         SDISPLAY,
     )
 }
+
+
+def blocks_for(firmware: str | None) -> dict[str, BlockDef]:
+    """The block tables for a firmware version such as ``5.09`` or ``7.02``."""
+    if firmware and firmware.startswith("7."):
+        return {**BLOCKS, SGLOBAL_7X.key: SGLOBAL_7X}
+    return BLOCKS
+
 
 # Energy/heat meters — FHEM %getsonly439 cmd2/cmd3 pairs.
 ENERGY: dict[str, EnergyDef] = {

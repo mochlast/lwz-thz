@@ -1,5 +1,7 @@
 """Client tests: serialization, error classification, backoff behaviour."""
 
+import logging
+
 import pytest
 
 from thzprotocol import framing
@@ -43,6 +45,33 @@ class TestReads:
         values = await client.read_block("sGlobal")
         assert values["outside_temp"] == 22.7
         assert values["compressor"] is False
+
+    @pytest.mark.parametrize(
+        ("firmware", "expected_pel"), [(b"\x01\xfd", 2.945), (b"\x02\xbe", 0.002945)]
+    )
+    async def test_sglobal_table_follows_firmware(
+        self, firmware: bytes, expected_pel: float
+    ) -> None:
+        # Same Pel register (2.945) read after 5.09 (kW) and 7.02 (W).
+        data = bytearray(77)
+        data[49:53] = bytes.fromhex("403C7AE1")  # Pel at payload nibble 102
+        transport = FakeTransport(
+            _handshake(b"\xfd", firmware) + _handshake(b"\xfb", bytes(data))
+        )
+        client = ThzClient(lambda: transport)
+        await client.connect()
+        await client.get_firmware()
+        values = await client.read_block("sGlobal")
+        assert values["actual_power_pel"] == pytest.approx(expected_pel)
+
+    async def test_raw_telegram_logged_at_debug(self, caplog) -> None:
+        transport = FakeTransport(_handshake(b"\xfd", b"\x02\xbe"))
+        client = ThzClient(lambda: transport)
+        await client.connect()
+        with caplog.at_level(logging.DEBUG, logger="thzprotocol.client"):
+            assert await client.get_firmware() == "7.02"
+        assert "FD -> " in caplog.text
+        assert "fd 02 be" in caplog.text
 
     async def test_read_energy_combines_low_and_high_word(self) -> None:
         # heat_hc_total: low register 456 kWh + high register 3 -> 3456 kWh
