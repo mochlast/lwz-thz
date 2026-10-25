@@ -32,6 +32,12 @@ def test_sensor_value_keys_exist() -> None:
 def test_binary_sensor_value_keys_exist() -> None:
     valid = _registry_keys()
     missing = [d.key for d in BINARY_SENSORS if d.value_key not in valid]
+    missing += [
+        d.key
+        for d in BINARY_SENSORS
+        for _, value_key in d.firmware_value_keys
+        if value_key not in valid
+    ]
     assert not missing, f"binary sensor descriptions with unknown value_key: {missing}"
 
 

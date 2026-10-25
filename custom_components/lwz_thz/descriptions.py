@@ -7,7 +7,7 @@ consistency test asserts that every referenced key exists.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 from homeassistant.components.binary_sensor import (
     BinarySensorDeviceClass,
@@ -68,6 +68,15 @@ class ThzBinarySensorDescription(BinarySensorEntityDescription):
 
     value_key: str
     feature: str | None = None
+    # (firmware prefix, value_key) pairs that replace value_key on that firmware.
+    firmware_value_keys: tuple[tuple[str, str], ...] = ()
+
+    def for_firmware(self, firmware: str) -> ThzBinarySensorDescription:
+        """This description with the value key that fits the firmware."""
+        for prefix, value_key in self.firmware_value_keys:
+            if firmware.startswith(prefix):
+                return replace(self, value_key=value_key)
+        return self
 
 
 def _temp(
@@ -342,6 +351,7 @@ def _binary(
     enabled: bool = True,
     diagnostic: bool = False,
     feature: str | None = None,
+    firmware_value_keys: tuple[tuple[str, str], ...] = (),
 ) -> ThzBinarySensorDescription:
     return ThzBinarySensorDescription(
         key=key,
@@ -351,6 +361,7 @@ def _binary(
         entity_registry_enabled_default=enabled,
         entity_category=EntityCategory.DIAGNOSTIC if diagnostic else None,
         feature=feature,
+        firmware_value_keys=firmware_value_keys,
     )
 
 
@@ -359,7 +370,16 @@ _PROBLEM = BinarySensorDeviceClass.PROBLEM
 
 BINARY_SENSORS: tuple[ThzBinarySensorDescription, ...] = (
     # sGlobal — actuator bits
-    _binary("compressor", "sGlobal.compressor", device_class=_RUNNING),
+    # The sGlobal layout is FHEM's 4.39/5.39 profile. Firmware 7.x (Tecalor
+    # THZ 5.5 eco, issue #3) keeps bit 47.3 set while the compressor stands
+    # still; the front-display bit follows it there. On 5.09 both bits agree
+    # with the electrical power, so 4.x/5.x stay on sGlobal.
+    _binary(
+        "compressor",
+        "sGlobal.compressor",
+        device_class=_RUNNING,
+        firmware_value_keys=(("7.", "sDisplay.compressor"),),
+    ),
     _binary(
         "heating_circuit_pump", "sGlobal.heating_circuit_pump", device_class=_RUNNING
     ),
