@@ -167,6 +167,13 @@ WRITE_PARAMS: dict[str, WriteParamDef] = {
         WriteParamDef(
             "p50_summer_mode_hysteresis", "0A05A2", WriteType.TEMP5, 1, 5, 0.1
         ),
+        # Passive cooling: 0 off, 1 exhaust air, 2 supply air, 3 bypass module,
+        # 4 summer cassette (manual LWZ 304/404 Trend, "Passivkühlung").
+        # FHEM: 0..2 on the 4.39 profile, 0..4 on 5.39.
+        WriteParamDef("p75_passive_cooling", "0A0575", WriteType.CLEAN1, 0, 4),
+        # Solar (issue #5). Both answer on units without a solar circuit too.
+        WriteParamDef("p80_enable_solar", "0A03C1", WriteType.CLEAN1, 0, 1),
+        WriteParamDef("p83_dhw_temp_solar", "0A05BE", WriteType.TEMP5, 10, 75, 0.1),
     )
 }
 

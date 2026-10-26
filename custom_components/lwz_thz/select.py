@@ -20,8 +20,9 @@ async def async_setup_entry(
     async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
     features = _enabled_features(entry)
+    firmware = entry.runtime_data.firmware
     async_add_entities(
-        ThzSelect(entry.runtime_data, description)
+        ThzSelect(entry.runtime_data, description.for_firmware(firmware))
         for description in SELECTS
         if description.feature is None or description.feature in features
     )

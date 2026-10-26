@@ -1,4 +1,4 @@
-"""Switch platform: enable/disable the weekly program windows."""
+"""Switch platform: weekly program windows and on/off parameters."""
 
 from __future__ import annotations
 
@@ -10,7 +10,9 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
 from .coordinator import ThzConfigEntry, ThzCoordinator
+from .descriptions import SWITCHES, ThzSwitchDescription
 from .entity import ThzEntity
+from .sensor import _enabled_features
 from .thzprotocol.programs import PROGRAM_SLOTS
 from .time import DEFAULT_END, DEFAULT_START, parse_program_time
 
@@ -25,6 +27,29 @@ async def async_setup_entry(
     async_add_entities(
         ThzProgramSwitch(entry.runtime_data, slot_key) for slot_key in PROGRAM_SLOTS
     )
+    features = _enabled_features(entry)
+    async_add_entities(
+        ThzParamSwitch(entry.runtime_data, description)
+        for description in SWITCHES
+        if description.feature is None or description.feature in features
+    )
+
+
+class ThzParamSwitch(ThzEntity, SwitchEntity):
+    """Writable 0/1 parameter exposed as a switch."""
+
+    entity_description: ThzSwitchDescription
+
+    @property
+    def is_on(self) -> bool | None:
+        value = self.coordinator.data.get(self.entity_description.value_key)
+        return None if value is None else bool(value)
+
+    async def async_turn_on(self, **kwargs: Any) -> None:
+        await self.coordinator.async_write_param(self.entity_description.param_key, 1)
+
+    async def async_turn_off(self, **kwargs: Any) -> None:
+        await self.coordinator.async_write_param(self.entity_description.param_key, 0)
 
 
 class ThzProgramSwitch(ThzEntity, SwitchEntity):

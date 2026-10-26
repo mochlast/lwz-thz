@@ -26,6 +26,12 @@ reconnect handling and per-group poll intervals.
   summer mode threshold and hysteresis, DHW setpoint for manual mode. These
   decide when the compressor starts; here the narrower of FHEM and manual
   range applies
+- **Passive cooling** (p75) as a select: off, exhaust air, supply air,
+  bypass module, summer cassette (manual LWZ 304/404 Trend; 4.x firmware
+  offers the first three)
+- **Solar** (option *Solar system installed*): collector, solar DHW and solar
+  flow temperature, solar pump, *Solar enabled* (p80) and the solar DHW
+  setpoint (p83)
 - **Device clock**: the unit's own clock (its time programs run on it) as a
   timestamp sensor plus its offset to Home Assistant in minutes. A button
   syncs it on demand and writes only the fields that are off (minute ≥ 2 min
