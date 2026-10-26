@@ -169,7 +169,8 @@ WRITE_PARAMS: dict[str, WriteParamDef] = {
         ),
         # Passive cooling: 0 off, 1 exhaust air, 2 supply air, 3 bypass module,
         # 4 summer cassette (manual LWZ 304/404 Trend, "Passivkühlung").
-        # FHEM: 0..2 on the 4.39 profile, 0..4 on 5.39.
+        # FHEM: 0..2 on the 4.39 profile, 0..4 on 5.39. Checked on a LWZ 304
+        # Trend (5.09): 1 shows ABLÜFTEN and 2 ZULÜFTEN on the display.
         WriteParamDef("p75_passive_cooling", "0A0575", WriteType.CLEAN1, 0, 4),
         # Solar (issue #5). Both answer on units without a solar circuit too.
         WriteParamDef("p80_enable_solar", "0A03C1", WriteType.CLEAN1, 0, 1),
