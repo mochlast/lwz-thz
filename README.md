@@ -64,7 +64,8 @@ per version.
 |---|---|---|---|
 | Stiebel Eltron LWZ 304 Trend | 5.09 | Tested (maintainer's unit) | Reference for all features |
 | Tecalor THZ 5.5 eco | 7.02 | Tested by a user ([#3](https://github.com/mochlast/lwz-thz/issues/3)) | Compressor state from the display bit; Pel sent in W, converted to kW. *Evaporator ice monitor* and *EVU release* are not reliable yet |
-| Other LWZ/THZ 30x/40x | 4.x, 5.x | Expected to work, not tested | On 4.x, passive cooling (p75) offers only off / exhaust air / supply air |
+| Tecalor THZ 403 SOL | 4.39 | Tested by a user ([#5](https://github.com/mochlast/lwz-thz/issues/5)) | Solar values confirmed. Passive cooling (p75) offers only off / exhaust air / supply air; the option names are not confirmed on 4.x yet |
+| Other LWZ/THZ 30x/40x | 4.x, 5.x | Expected to work, not tested | |
 | LWZ/THZ with firmware 2.x | 2.06, 2.14 | Not supported | Different register layout |
 
 ### Your unit is not in the list?
