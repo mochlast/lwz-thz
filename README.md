@@ -27,8 +27,7 @@ reconnect handling and per-group poll intervals.
   decide when the compressor starts; here the narrower of FHEM and manual
   range applies
 - **Passive cooling** (p75) as a select: off, exhaust air, supply air,
-  bypass module, summer cassette (manual LWZ 304/404 Trend; 4.x firmware
-  offers the first three)
+  bypass module, summer cassette
 - **Solar** (option *Solar system installed*): collector, solar DHW and solar
   flow temperature, solar pump, *Solar enabled* (p80) and the solar DHW
   setpoint (p83)
@@ -55,11 +54,34 @@ reconnect handling and per-group poll intervals.
   via a udev alias) — or a ser2net bridge (TCP)
 - **Exclusive port access**: stop FHEM or any other reader first
 
-Tested on a LWZ 304 Trend (firmware 5.09). Firmware profile 4.39/5.39
-(LWZ/THZ 30x/40x); the 2.x firmware family is not supported. On firmware
-7.x (e.g. Tecalor THZ 5.5 eco) the compressor sensor reads the front-display
-bit, because the sGlobal bit stays set there while the compressor is off, and
-the electrical power (Pel) comes in W instead of kW and is converted.
+## Supported units
+
+The service interface reports a firmware version but no model. The register
+tables come from FHEM's 4.39/5.39 profile; firmware differences are handled
+per version.
+
+| Unit | Firmware | Status | Notes |
+|---|---|---|---|
+| Stiebel Eltron LWZ 304 Trend | 5.09 | Tested (maintainer's unit) | Reference for all features |
+| Tecalor THZ 5.5 eco | 7.02 | Tested by a user ([#3](https://github.com/mochlast/lwz-thz/issues/3)) | Compressor state from the display bit; Pel sent in W, converted to kW. *Evaporator ice monitor* and *EVU release* are not reliable yet |
+| Other LWZ/THZ 30x/40x | 4.x, 5.x | Expected to work, not tested | On 4.x, passive cooling (p75) offers only off / exhaust air / supply air |
+| LWZ/THZ with firmware 2.x | 2.06, 2.14 | Not supported | Different register layout |
+
+### Your unit is not in the list?
+
+Please help to add it. Open an [issue](https://github.com/mochlast/lwz-thz/issues)
+with your model, its firmware (device page in Home Assistant) and a debug log
+with raw telegrams. You capture the log inside Home Assistant, also on
+Home Assistant OS, with no CLI and no free serial port:
+
+1. *Settings → Devices & services → LWZ/THZ → ⋮ → Enable debug logging*
+2. Leave it on for 30–60 minutes, ideally while the compressor starts or
+   stops (status values are read every 5 minutes by default).
+3. *⋮ → Disable debug logging*: the browser downloads the log. Lines like
+   `FB -> 8f fb fd a8 …` are the raw answers per command.
+
+A diagnostics download (*⋮ → Download diagnostics*) with the compressor
+running and one with it stopped help as well.
 
 ## Installation
 
@@ -109,16 +131,6 @@ A refused value is never silently lost. Every write is read back, so:
 Also worth knowing: above roughly 55 °C the compressor alone no longer reaches
 the target, and the electric booster (NE) runs — which costs a lot of
 electricity.
-
-## Raw telegrams for other firmware
-
-To help support a firmware that is not tested yet, capture the raw telegrams
-inside Home Assistant (no serial port juggling, works on Home Assistant OS):
-
-1. *Settings → Devices & services → LWZ/THZ → ⋮ → Enable debug logging*
-2. Wait for one status poll (every 5 minutes by default).
-3. *⋮ → Disable debug logging*: the browser downloads the log. Lines like
-   `FB -> 8f fb fd a8 …` are the raw answers per command.
 
 ## CLI (no Home Assistant required)
 
