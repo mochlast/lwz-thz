@@ -6,6 +6,7 @@ from custom_components.lwz_thz.descriptions import (
     NUMBERS,
     SELECTS,
     SENSORS,
+    SWITCHES,
 )
 from custom_components.lwz_thz.thzprotocol.mappings import OP_MODE_REVERSE
 from custom_components.lwz_thz.thzprotocol.registers import BLOCKS, ENERGY
@@ -44,6 +45,7 @@ def test_binary_sensor_value_keys_exist() -> None:
 def test_description_keys_unique() -> None:
     keys = [d.key for d in SENSORS] + [d.key for d in BINARY_SENSORS]
     keys += [d.key for d in NUMBERS] + [d.key for d in SELECTS]
+    keys += [d.key for d in SWITCHES]
     duplicates = {key for key in keys if keys.count(key) > 1}
     assert not duplicates, f"duplicate description keys: {duplicates}"
 
@@ -51,17 +53,21 @@ def test_description_keys_unique() -> None:
 def test_number_select_param_keys_exist() -> None:
     missing = [d.key for d in NUMBERS if d.param_key not in WRITE_PARAMS]
     missing += [d.key for d in SELECTS if d.param_key not in WRITE_PARAMS]
+    missing += [d.key for d in SWITCHES if d.param_key not in WRITE_PARAMS]
     assert not missing, f"descriptions with unknown param_key: {missing}"
 
 
 def test_every_write_param_has_exactly_one_entity() -> None:
     used = [d.param_key for d in NUMBERS] + [d.param_key for d in SELECTS]
+    used += [d.param_key for d in SWITCHES]
     assert sorted(used) == sorted(WRITE_PARAMS)
 
 
 def test_select_options_match_mapping() -> None:
     for description in SELECTS:
         assert set(description.options) == set(description.option_to_value)
+        for _, options in description.firmware_options:
+            assert set(options) <= set(description.options), description.key
         if description.key == "op_mode":
             unknown = set(description.option_to_value.values()) - set(OP_MODE_REVERSE)
             assert not unknown, f"op_mode options without protocol code: {unknown}"
@@ -86,6 +92,7 @@ def test_translations_cover_all_entities() -> None:
         ]
         missing += [d.key for d in NUMBERS if d.key not in entity_names["number"]]
         missing += [d.key for d in SELECTS if d.key not in entity_names["select"]]
+        missing += [d.key for d in SWITCHES if d.key not in entity_names["switch"]]
         missing += [k for k in ("sync_clock",) if k not in entity_names["button"]]
         assert not missing, f"{language_file} missing entity names: {missing}"
 

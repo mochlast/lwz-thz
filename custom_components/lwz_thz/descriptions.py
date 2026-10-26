@@ -24,6 +24,7 @@ from homeassistant.components.sensor import (
     SensorEntityDescription,
     SensorStateClass,
 )
+from homeassistant.components.switch import SwitchEntityDescription
 from homeassistant.const import (
     PERCENTAGE,
     REVOLUTIONS_PER_MINUTE,
@@ -52,6 +53,14 @@ OP_MODE_OPTIONS = [
     "emergency",
 ]
 FAN_STAGE_OPTIONS = ["stage_0", "stage_1", "stage_2", "stage_3"]
+# p75 values 0..4 in this order; 3 and 4 need an optional module.
+PASSIVE_COOLING_OPTIONS = [
+    "off",
+    "exhaust_air",
+    "supply_air",
+    "bypass",
+    "summer_cassette",
+]
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -327,6 +336,7 @@ SENSORS: tuple[ThzSensorDescription, ...] = (
     # sSol (feature-gated)
     _temp("solar_collector_temp", "sSol.collector_temp", feature=FEATURE_SOLAR),
     _temp("solar_dhw_temp", "sSol.dhw_temp", feature=FEATURE_SOLAR),
+    _temp("solar_flow_temp", "sSol.flow_temp", feature=FEATURE_SOLAR),
     # Energy / heat meters (energy dashboard: use the electricity totals)
     _energy("energy_heat_hc_day", "heat_hc_day"),
     _energy("energy_heat_hc_total", "heat_hc_total"),
@@ -492,6 +502,30 @@ class ThzSelectDescription(SelectEntityDescription):
     value_key: str
     option_to_value: dict[str, float | str]
     feature: str | None = None
+    # (firmware prefix, options) pairs that narrow the options on that firmware.
+    firmware_options: tuple[tuple[str, tuple[str, ...]], ...] = ()
+
+    def for_firmware(self, firmware: str) -> ThzSelectDescription:
+        """This description with the options the firmware accepts."""
+        for prefix, options in self.firmware_options:
+            if firmware.startswith(prefix):
+                return replace(
+                    self,
+                    options=list(options),
+                    option_to_value={
+                        option: self.option_to_value[option] for option in options
+                    },
+                )
+        return self
+
+
+@dataclass(frozen=True, kw_only=True)
+class ThzSwitchDescription(SwitchEntityDescription):
+    """On/off parameter (register value 0/1) exposed as a switch."""
+
+    param_key: str
+    value_key: str
+    feature: str | None = None
 
 
 def _setpoint(
@@ -615,6 +649,21 @@ NUMBERS: tuple[ThzNumberDescription, ...] = (
     _control_param("p30_integral_component", unit="K·min"),
     _control_param("p49_summer_mode_temp", **_CELSIUS),
     _control_param("p50_summer_mode_hysteresis", unit="K"),
+    # Solar
+    ThzNumberDescription(
+        key="p83_dhw_temp_solar",
+        translation_key="p83_dhw_temp_solar",
+        param_key="p83_dhw_temp_solar",
+        value_key="param.p83_dhw_temp_solar",
+        device_class=NumberDeviceClass.TEMPERATURE,
+        native_unit_of_measurement=UnitOfTemperature.CELSIUS,
+        native_min_value=WRITE_PARAMS["p83_dhw_temp_solar"].min,
+        native_max_value=WRITE_PARAMS["p83_dhw_temp_solar"].max,
+        native_step=WRITE_PARAMS["p83_dhw_temp_solar"].step,
+        mode=NumberMode.BOX,
+        entity_category=EntityCategory.CONFIG,
+        feature=FEATURE_SOLAR,
+    ),
 )
 
 SELECTS: tuple[ThzSelectDescription, ...] = (
@@ -630,4 +679,28 @@ SELECTS: tuple[ThzSelectDescription, ...] = (
     _stage_select("p08_fan_stage_night"),
     _stage_select("p09_fan_stage_standby", category=EntityCategory.CONFIG),
     _stage_select("p99_start_unsched_vent"),
+    ThzSelectDescription(
+        key="p75_passive_cooling",
+        translation_key="p75_passive_cooling",
+        param_key="p75_passive_cooling",
+        value_key="param.p75_passive_cooling",
+        options=PASSIVE_COOLING_OPTIONS,
+        option_to_value={
+            option: index for index, option in enumerate(PASSIVE_COOLING_OPTIONS)
+        },
+        entity_category=EntityCategory.CONFIG,
+        # FHEM's 4.39 profile stops at 2 (no bypass / summer cassette).
+        firmware_options=(("4.", tuple(PASSIVE_COOLING_OPTIONS[:3])),),
+    ),
+)
+
+SWITCHES: tuple[ThzSwitchDescription, ...] = (
+    ThzSwitchDescription(
+        key="p80_enable_solar",
+        translation_key="p80_enable_solar",
+        param_key="p80_enable_solar",
+        value_key="param.p80_enable_solar",
+        entity_category=EntityCategory.CONFIG,
+        feature=FEATURE_SOLAR,
+    ),
 )

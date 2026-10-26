@@ -53,8 +53,8 @@ class TestUpdateData:
         assert data["param.op_mode"] == "automatic"
         # 6 status blocks + 2 history blocks + sTimedate
         assert mock_client.read_block.await_count == 9
-        # 16 practice parameters + 11 control parameters
-        assert mock_client.read_param.await_count == 27
+        # 16 practice + 11 control + p75 passive cooling + p80/p83 solar
+        assert mock_client.read_param.await_count == 30
         assert mock_client.read_program.await_count == 9
         assert mock_client.read_energy.await_count == 12
 

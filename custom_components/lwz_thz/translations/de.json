@@ -236,6 +236,9 @@
       "solar_dhw_temp": {
         "name": "Solar-Warmwassertemperatur"
       },
+      "solar_flow_temp": {
+        "name": "Solar-Vorlauftemperatur"
+      },
       "energy_heat_hc_day": {
         "name": "Wärmemenge Heizen heute"
       },
@@ -439,6 +442,9 @@
       },
       "p50_summer_mode_hysteresis": {
         "name": "Sommerbetrieb Hysterese (p50)"
+      },
+      "p83_dhw_temp_solar": {
+        "name": "Warmwasser-Soll Solar (p83)"
       }
     },
     "select": {
@@ -488,6 +494,16 @@
           "stage_1": "Stufe 1",
           "stage_2": "Stufe 2",
           "stage_3": "Stufe 3"
+        }
+      },
+      "p75_passive_cooling": {
+        "name": "Passivkühlung (p75)",
+        "state": {
+          "off": "Aus",
+          "exhaust_air": "Ablüften",
+          "supply_air": "Zulüften",
+          "bypass": "Bypass",
+          "summer_cassette": "Sommerkassette"
         }
       }
     },
@@ -579,6 +595,9 @@
       },
       "prog_fan_3_active": {
         "name": "Lüftungsprogramm 3 aktiv"
+      },
+      "p80_enable_solar": {
+        "name": "Solar aktiv (p80)"
       }
     }
   },

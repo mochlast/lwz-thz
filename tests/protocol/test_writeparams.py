@@ -167,6 +167,53 @@ class TestControlParams:
         assert not values_match(param, 150, 100)
 
 
+# Issue #5: passive cooling and solar. Same columns as CONTROL_CASES; the
+# values are what Marc's FHEM logged for this unit (2022, never changed).
+ISSUE5_CASES = [
+    ("p75_passive_cooling", "p75passiveCooling", "0A0575", 0, "0000"),
+    ("p80_enable_solar", "p80EnableSolar", "0A03C1", 0, "0000"),
+    ("p83_dhw_temp_solar", "p83DHWsetSolarTemp", "0A05BE", 60.0, "0258"),
+]
+
+
+class TestPassiveCoolingSolar:
+    @pytest.mark.parametrize(
+        ("key", "fhem", "command", "value", "encoded"), ISSUE5_CASES
+    )
+    def test_register_and_codec(self, key, fhem, command, value, encoded) -> None:
+        param = WRITE_PARAMS[key]
+        assert param.command == command, fhem
+        assert encode_value(param, value) == encoded
+        assert decode_value(param, bytes.fromhex("AB" + command + encoded)) == value
+
+    @pytest.mark.parametrize(
+        ("key", "low", "high", "below", "above"),
+        [
+            ("p75_passive_cooling", 0, 4, -1, 5),  # manual: five options
+            ("p80_enable_solar", 0, 1, -1, 2),
+            ("p83_dhw_temp_solar", 10, 75, 9.9, 75.1),  # FHEM
+        ],
+    )
+    def test_ranges(self, key, low, high, below, above) -> None:
+        param = WRITE_PARAMS[key]
+        encode_value(param, low)
+        encode_value(param, high)
+        with pytest.raises(ValueError):
+            encode_value(param, below)
+        with pytest.raises(ValueError):
+            encode_value(param, above)
+
+    def test_passive_cooling_options_encode_in_manual_order(self) -> None:
+        param = WRITE_PARAMS["p75_passive_cooling"]
+        assert [encode_value(param, v) for v in range(5)] == [
+            "0000",
+            "0001",
+            "0002",
+            "0003",
+            "0004",
+        ]
+
+
 class TestDecodeValue:
     def test_temp5(self) -> None:
         payload = bytes.fromhex("AB" + "0B0005" + "00DC")
