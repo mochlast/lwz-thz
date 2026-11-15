@@ -323,7 +323,7 @@
         "name": "Ofen-/Kamin-Eingang"
       },
       "stb": {
-        "name": "Sicherheitstemperaturbegrenzer"
+        "name": "Heizstab-Versorgung (STB)"
       },
       "high_pressure_sensor": {
         "name": "Hochdrucksensor"

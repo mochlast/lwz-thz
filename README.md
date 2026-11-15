@@ -46,6 +46,17 @@ reconnect handling and per-group poll intervals.
 - Extras in `dashboard/`: a control dashboard, FHEM-style graph dashboard
   templates and a heating-curve custom card
 
+### Note: the "STB" bit
+
+FHEM reads byte 48 bit 2 of `sGlobal` as `STB` (Sicherheitstemperaturbegrenzer,
+safety temperature limiter) and gives no further meaning. On an LWZ 304 Trend
+(firmware 5.09) it switched on and off with `booster_stage_1` at the same poll
+while the booster drew power (2026-11-15, 13:31:39–16:16:30). So it is not a
+fault flag. It reads as "the booster circuit behind the STB is supplied". The
+entity is therefore named **Booster supply (STB)** with device class `power`.
+A tripped STB would most likely show as a booster stage on with this bit off.
+This is not yet confirmed.
+
 ## Requirements
 
 - Home Assistant 2026.6 or newer

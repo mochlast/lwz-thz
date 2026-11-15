@@ -131,7 +131,7 @@ SGLOBAL = BlockDef(
         _bit("compressor", 47, 3),
         _bit("evu_release", 48, 0),
         _bit("oven_fireplace", 48, 1),
-        _bit("stb", 48, 2),
+        _bit("stb", 48, 2),  # booster supply behind the STB, not a fault flag
         _bit("quick_air_vent", 48, 3),
         _nbit("high_pressure_sensor", 49, 0),
         _nbit("low_pressure_sensor", 49, 1),
