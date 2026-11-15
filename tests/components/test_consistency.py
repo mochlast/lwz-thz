@@ -130,3 +130,12 @@ def test_control_params_disabled_by_default() -> None:
     by_key = {d.key: d for d in NUMBERS}
     for key in control:
         assert not by_key[key].entity_registry_enabled_default, key
+
+
+def test_stb_bit_is_booster_supply_not_a_fault() -> None:
+    """The FHEM "STB" bit tracks booster_stage_1; it must not show as a problem."""
+    from homeassistant.components.binary_sensor import BinarySensorDeviceClass
+
+    [stb] = [d for d in BINARY_SENSORS if d.key == "stb"]
+    assert stb.device_class is BinarySensorDeviceClass.POWER
+    assert stb.translation_key == "stb"  # keeps unique_id and entity_id stable

@@ -323,7 +323,7 @@
         "name": "Oven / fireplace input"
       },
       "stb": {
-        "name": "Safety temperature limiter"
+        "name": "Booster supply (STB)"
       },
       "high_pressure_sensor": {
         "name": "High pressure sensor"

@@ -422,7 +422,17 @@ BINARY_SENSORS: tuple[ThzBinarySensorDescription, ...] = (
     ),
     _binary("quick_air_vent", "sGlobal.quick_air_vent", enabled=False),
     _binary("oven_fireplace", "sGlobal.oven_fireplace", enabled=False),
-    _binary("stb", "sGlobal.stb", device_class=_PROBLEM, diagnostic=True),
+    # FHEM calls this bit "STB" (Sicherheitstemperaturbegrenzer), but it is not a
+    # fault flag: it follows booster_stage_1 to the poll (2026-11-15: both on
+    # 13:31:39-16:16:30) while the booster drew power. It reads as "the booster
+    # circuit behind the STB is supplied". A tripped STB would show up as a
+    # booster stage on with this bit off.
+    _binary(
+        "stb",
+        "sGlobal.stb",
+        device_class=BinarySensorDeviceClass.POWER,
+        diagnostic=True,
+    ),
     _binary(
         "high_pressure_sensor",
         "sGlobal.high_pressure_sensor",
